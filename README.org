@@ -7,10 +7,11 @@ Create a public folder with your =index.php= there and just:
 #+begin_src php
   const BASE_PATH = __DIR__ . "/../";
   require BASE_PATH . "libs/tusk/init.php";
+  read_config("config.php"); // mandatory
   import("libs/tusk/src");
 #+end_src
 
-I suggest creating a =globals.php= for global variables that uses =DEFINE=.
+It is necessary to have a =config.php= for configuring where should tusk look for things. I recommend creating a =globals.php= too, for variables that uses =DEFINE=.
 
 ** Local Development
 For development I like to use php built-ins web server. Create a =Makefile= at the top level with the following:
@@ -45,6 +46,30 @@ Tusk expect a route based directory tree. Every endpoint has a corresponding dir
   controller("web/my/route.php");
   // the common way is to have a main.php in the route dir
   controller("web/my/route/"); // web/my/route/main.php
+#+end_src
+
+** Config.php Example
+#+begin_src php
+  return [
+      // The WEB_DIR constant tells where the pages are. Same for the API_DIR
+      "WEB_DIR"             => "web",
+      "API_DIR"             => "api",
+
+      // Name of the dir each route will have for small pieces of html snippets
+      // Example: web/home/snippets/contact_form.php
+      "COMPONENTS_DIR_NAME" => "snippets",
+
+      // Where tusk should look for important and reproducible html, like <head/>,
+      // <nav/>, <footer/>, etc...
+      "PARTIALS_DIR"        => "web/partials",
+
+      // Directory for tusk to look when using tusk\icon() and tusk\svg()
+      "ICONS_DIR"           => "public/svg/icons",
+      "SVG_DIR"             => "public/svg",
+
+      // Where error pages are located, like the famous "404 Not Found :("
+      "ERROR_PAGES_DIR"     => "web/errors",
+  ];
 #+end_src
 
 * Contributing
