@@ -7,6 +7,7 @@ Create a public folder with your =index.php= there and just:
 #+begin_src php
   const BASE_PATH = __DIR__ . "/../";
   require BASE_PATH . "libs/tusk/init.php";
+  import("libs/tusk/src");
 #+end_src
 
 I suggest creating a =globals.php= for global variables that uses =DEFINE=.

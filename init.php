@@ -41,5 +41,3 @@ function import(string $path, array $ctx = [], int $index = 0): void
     require_once $base;
     return;
 }
-
-import("lib");
