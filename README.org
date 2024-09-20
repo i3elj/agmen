@@ -1,0 +1,52 @@
+#+title: tusk
+
+* Tusk
+a simple opinionated web library to be used alongside nginx or apache
+
+* How to use it
+Create a public folder with your =index.php= there and just:
+
+#+begin_src php
+  const BASE_PATH = __DIR__ . "/../";
+  require BASE_PATH . "libs/tusk/init.php";
+#+end_src
+
+I suggest creating a =globals.php= for global variables that uses =DEFINE=.
+
+** Local Development
+For development I like to use php built-ins web server. Create a =Makefile= at the top level with the following:
+
+#+begin_src makefile
+  all: run
+
+  run:
+      @echo "starting server..."
+      @php -S localhost:8080 -t ./public/ --php-ini=./php.ini # optional, I don't like to mess with my global php.ini
+
+  # add more stuff as you go
+#+end_src
+
+You'll probably need a .env file with the following:
+
+#+begin_src env
+DB=sqlite # sqlite | pgsql | mysql
+DB_URL=db.sqlite
+# works for pgsql | mysql
+DB_HOST=localhost
+DB_PORT=8080
+DB_USER=admin
+DB_PASSWORD=admin
+DB_NAME=dbname
+#+end_src
+
+** Directories and Files
+Tusk expect a route based directory tree. Every endpoint has a corresponding directory. Pages goes inside =web/=, it expects a =main.php= for the controller and a =view.php= for it's view if it has one. If you plan on doing purely REST API's you can pass the entire path to the file instead of just the route e.g.
+
+#+begin_src php
+  controller("web/my/route.php");
+  // the common way is to have a main.php in the route dir
+  controller("web/my/route/"); // web/my/route/main.php
+#+end_src
+
+* Contributing
+I don't plan on supporting this more than what I need. If you have something to add up, try your luck, I might not answer it. If I like it I'll accept probably. I accept bug reports tho.
