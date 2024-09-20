@@ -1,5 +1,7 @@
 <?php declare(strict_types=1);
 
+namespace tusk;
+
 function middleware(string $route, string ...$mc): void
 {
     if (array_reduce($mc, fn($carry, $m) => $carry && $m::run(), true)) {

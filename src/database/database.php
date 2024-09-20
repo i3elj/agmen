@@ -1,5 +1,11 @@
 <?php declare(strict_types=1);
 
+namespace tusk;
+
+use PDO;
+use PDOException;
+use Exception;
+
 class Database
 {
     private PDO $pdo;

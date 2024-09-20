@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace http\header;
+namespace tusk\http\header;
 
 function redirect(string $path, int $exit_status = 0): void
 {

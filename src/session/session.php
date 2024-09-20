@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace session;
+namespace tusk\session;
 
 function init(string $name = "SessionName")
 {

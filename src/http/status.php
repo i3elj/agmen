@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace http\status;
+namespace tusk\http\status;
 
 function permanent_redirect(bool $kill = true): void
 {

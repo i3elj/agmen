@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace io\logs;
+namespace tusk\io\logs;
 
 function todo(string $filename, string $funcname, string $msg = '')
 {

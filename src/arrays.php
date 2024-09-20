@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace arrays;
+namespace tusk\arrays;
 
 function array_escape(array $arr)
 {

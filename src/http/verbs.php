@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 // TODO: escape and clean data sent through requests
 
-namespace http;
+namespace tusk\http;
 
 function POST(string $key, bool $opt = false): string | array | null
 {

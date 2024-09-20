@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace io\files;
+namespace tusk\io\files;
 
 function get_mime_type(string $filename): bool|string
 {
