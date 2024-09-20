@@ -1,11 +1,24 @@
 <?php declare(strict_types=1);
 
+define("URL", parse_url($_SERVER['REQUEST_URI']));
+
 /**
- * Applies the BASE_PATH constant as a function
+ * Read the config file and define it's key-value pair as global constants.
+ */
+function read_config()
+{
+    $vars = require base_path("config.php");
+
+    foreach ($vars as $key => $value)
+        define("$key", $value);
+}
+
+/**
+ * Applies the a base path for the rest of the library
  */
 function base_path(string $path): string
 {
-    return BASE_PATH . $path;
+    return "/../$path";
 }
 
 /**

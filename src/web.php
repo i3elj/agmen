@@ -22,47 +22,40 @@ function controller(string $path, array $ctx = []): void
     return;
 }
 
-function view(array $ctx = [], string $prefix = "web"): void
+function view(array $ctx = []): void
 {
     extract($ctx);
-
-    $viewPath = match ($prefix) {
-        "api" => PATH . "view.php",
-        default => $prefix . PATH . "view.php",
-    };
-
-    require_once base_path($viewPath);
-    return;
+    require_once base_path(WEB_DIR . URL['path'] . "view.php");
 }
 
-function section(string $section, array $ctx = [], string $prefix = "web"): void
+function snip(string $name, array $ctx = []): void
 {
     extract($ctx);
-    require base_path($prefix . PATH . "sections/" . $section . ".php");
-    return;
+    require base_path(
+        WEB_DIR . URL['path'] . COMPONENTS_DIR . "$name.php"
+    );
 }
 
 function partials(string $name, array $ctx = []): void
 {
     extract($ctx);
-    require base_path("web/partials/" . $name . ".php");
-    return;
-}
-
-function fstatic(string $path)
-{
-    return file_get_contents(base_path($path));
+    require base_path(PARTIALS_DIR . "$name.php");
 }
 
 function error_page(string $name): void
 {
-    require_once base_path("web/errors/" . $name . ".php");
+    require_once base_path(ERROR_PAGES_DIR . "$name.php");
     exit(1);
+}
+
+function icon(string $name, array $ctx = []): void
+{
+    extract($ctx);
+    require base_path(ICONS_DIR . "$name.svg");
 }
 
 function svg(string $name, array $ctx = []): void
 {
     extract($ctx);
-    require base_path("public_html/assets/svg/" . $name . ".svg");
-    return;
+    require base_path(SVG_DIR . "$name.svg");
 }
