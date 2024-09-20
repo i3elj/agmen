@@ -25,37 +25,37 @@ function controller(string $path, array $ctx = []): void
 function view(array $ctx = []): void
 {
     extract($ctx);
-    require_once base_path(WEB_DIR . URL['path'] . "view.php");
+    require_once base_path(\WEB_DIR . URL['path'] . "view.php");
 }
 
 function snip(string $name, array $ctx = []): void
 {
     extract($ctx);
     require base_path(
-        WEB_DIR . URL['path'] . COMPONENTS_DIR . "$name.php"
+        \WEB_DIR . URL['path'] . \COMPONENTS_DIR_NAME . "/$name.php"
     );
 }
 
 function partials(string $name, array $ctx = []): void
 {
     extract($ctx);
-    require base_path(PARTIALS_DIR . "$name.php");
+    require base_path(\PARTIALS_DIR . "/$name.php");
 }
 
 function error_page(string $name): void
 {
-    require_once base_path(ERROR_PAGES_DIR . "$name.php");
+    require_once base_path(\ERROR_PAGES_DIR . "$name.php");
     exit(1);
 }
 
 function icon(string $name, array $ctx = []): void
 {
     extract($ctx);
-    require base_path(ICONS_DIR . "$name.svg");
+    require base_path(\ICONS_DIR . "$name.svg");
 }
 
 function svg(string $name, array $ctx = []): void
 {
     extract($ctx);
-    require base_path(SVG_DIR . "$name.svg");
+    require base_path(\SVG_DIR . "$name.svg");
 }

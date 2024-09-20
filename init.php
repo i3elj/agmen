@@ -18,7 +18,7 @@ function read_config()
  */
 function base_path(string $path): string
 {
-    return "/../$path";
+    return \BASE_PATH . $path;
 }
 
 /**
