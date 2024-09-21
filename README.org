@@ -5,10 +5,8 @@ a simple opinionated web library to be used alongside nginx or apache
 Create a public folder with your =index.php= there and just:
 
 #+begin_src php
-  const BASE_PATH = __DIR__ . "/../";
-  require BASE_PATH . "libs/tusk/init.php";
-  read_config("config.php"); // mandatory
-  import("libs/tusk/src");
+  const BASE_PATH = __DIR__ . '/../';
+  require BASE_PATH . '/libs/tusk/init.php';
 #+end_src
 
 It is necessary to have a =config.php= for configuring where should tusk look for things. I recommend creating a =globals.php= too, for variables that uses =DEFINE=.
