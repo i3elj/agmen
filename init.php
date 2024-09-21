@@ -3,17 +3,6 @@
 define("URL", parse_url($_SERVER['REQUEST_URI']));
 
 /**
- * Read the config file and define it's key-value pair as global constants.
- */
-function read_config()
-{
-    $vars = require base_path("config.php");
-
-    foreach ($vars as $key => $value)
-        define("$key", $value);
-}
-
-/**
  * Applies the a base path for the rest of the library
  */
 function base_path(string $path): string
@@ -27,11 +16,7 @@ function base_path(string $path): string
  */
 function import(string $path, array $ctx = [], int $index = 0): void
 {
-    if ($index == 0) {
-        $base = base_path($path);
-    } else {
-        $base = $path;
-    }
+    $base = $index == 0 ? base_path($path) : $path;
 
     if (is_dir($base)) {
         foreach (new DirectoryIterator($base) as $file) {
@@ -54,3 +39,10 @@ function import(string $path, array $ctx = [], int $index = 0): void
     require_once $base;
     return;
 }
+
+$vars = require __DIR__ . '/../../config.php';
+
+foreach ($vars as $key => $value)
+    define("$key", $value);
+
+import(__DIR__ . '/src', index: 1);
