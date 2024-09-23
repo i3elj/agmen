@@ -49,24 +49,30 @@ class Route
      */
     private function parse_url_params($route)
     {
-        $name_type_regex = '/:([A-Za-z]+)\((string|int)\)/';
+        $var_type_regex = '/:([A-Za-z]+)\((word|number)\)/';
         $param = [];
 
-        if (preg_match($name_type_regex, $route, $matches)) {
-            $param = ['name' => $matches[1], 'type'=> $matches[2]];
+        if (preg_match($var_type_regex, $route, $output)) {
+            $param = ['name' => $output[1], 'type'=> $output[2]];
             $type_regex = match ($param['type']) {
-                'string' => '[a-z]+',
-                'int' => '\d+',
+                'word' => '[a-z]+',
+                'number' => '\d+',
             };
-            $parsed_route = preg_replace(
-                '/:([A-Za-z]+)(\((int|string)\))?/',
-                "($type_regex)",
-                $route
-            );
+
+            $type_replace_regex ='/:([A-Za-z]+)(\((word|number)\))?/';
+            $parsed_route = preg_replace($type_replace_regex, "($type_regex)", $route);
             $parsed_route = preg_replace('/\//', '\/', $parsed_route);
-            preg_match("/$parsed_route/", $this->path, $matches);
-            $this->params[$param['name']] = $matches[1];
-            return count($matches) > 0;
+
+            // check if the route ends with a route param or not
+            $parsed_route_regex =
+                count(preg_grep("/^.*:[a-z]+\((word|number)\)$/", [$route])) > 0
+            ? "/$parsed_route$/"
+                : "/$parsed_route/";
+
+            preg_match($parsed_route_regex, $this->path, $output);
+
+            $this->params[$param['name']] = $output[1];
+            return count($output) > 0;
         }
 
         return false;
