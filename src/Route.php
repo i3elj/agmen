@@ -9,7 +9,7 @@ class Route
     private array $params = [];
 
     public function __construct(
-        public string $path,
+        public readonly string $path,
     ) {}
 
     public function redirect(string $from, string $to)
@@ -65,8 +65,8 @@ class Route
             // check if the route ends with a route param or not
             $parsed_route_regex =
                 count(preg_grep("/^.*:[a-z]+\((word|number)\)$/", [$route])) > 0
-            ? "/$parsed_route$/"
-                : "/$parsed_route/";
+                    ? "/$parsed_route$/"
+                    : "/$parsed_route/";
 
             preg_match($parsed_route_regex, $this->path, $output);
 
