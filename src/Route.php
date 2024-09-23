@@ -50,7 +50,6 @@ class Route
     private function parse_url_params($route)
     {
         $var_type_regex = '/:([A-Za-z]+)\((word|number)\)/';
-        $param = [];
 
         if (preg_match($var_type_regex, $route, $output)) {
             $param = ['name' => $output[1], 'type'=> $output[2]];

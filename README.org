@@ -1,4 +1,5 @@
-* Tusk
+#+title: Tusk
+
 a simple opinionated web library to be used alongside nginx or apache
 
 * How to use it
@@ -9,7 +10,7 @@ Create a public folder with your =index.php= there and just:
   require BASE_PATH . 'libs/tusk/init.php';
 #+end_src
 
-It is necessary to have a =config.php= for configuring where should tusk look for things. I recommend creating a =globals.php= too, for variables that uses =DEFINE=.
+It is necessary to have a =config.php= for configuring where should tusk look for things. I recommend creating a =globals.php= too, for variables that uses =define()=.
 
 ** Local Development
 For development I like to use php built-ins web server. Create a =Makefile= at the top level with the following:
@@ -24,7 +25,7 @@ For development I like to use php built-ins web server. Create a =Makefile= at t
   # add more stuff as you go
 #+end_src
 
-You'll probably need a .env file with the following:
+You'll probably need a .env file with the following too:
 
 #+begin_src env
 DB=sqlite # sqlite | pgsql | mysql
@@ -38,7 +39,7 @@ DB_NAME=dbname
 #+end_src
 
 ** Directories and Files
-Tusk expect a route based directory tree. Every endpoint has a corresponding directory. Pages goes inside =web/=, it expects a =main.php= for the controller and a =view.php= for it's view if it has one. If you plan on doing purely REST API's you can pass the entire path to the file instead of just the route e.g.
+Tusk expect a route based directory structure. Every endpoint has a corresponding directory. Pages goes inside =web/=, it expects a =main.php= for the controller and a =view.php= for it's view if it has one. If you plan on doing purely REST API's you can pass the entire path to the file instead of just the route e.g.
 
 #+begin_src php
   controller("web/my/route.php");
@@ -69,6 +70,25 @@ Tusk expect a route based directory tree. Every endpoint has a corresponding dir
       "ERROR_PAGES_DIR"     => "web/errors",
   ];
 #+end_src
+
+** Index.php example
+#+begin_src php
+  use tusk\Route;
+
+  const BASE_PATH = __DIR__ . '/../';
+  require BASE_PATH . 'libs/tusk/init.php';
+  require BASE_PATH . 'globals.php';
+
+  const route = new Route(URL['path']);
+
+  route
+      ->redirect(from: '/', to: '/home')
+      ->path('/home', 'web/')
+      ->path('/user/:name(word)', 'web/user/')
+      ->path('/user/:name(word)/profile', 'web/user/profile/');
+#+end_src
+
+You can access =:name(word)= variable using =route->param("name")= function inside the controller.
 
 * Contributing
 I don't plan on supporting this more than what I need. If you have something to add up, try your luck, I might not answer it. If I like it I'll accept probably. I accept bug reports tho.
