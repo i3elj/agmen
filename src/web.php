@@ -65,7 +65,7 @@ function snip($name, $ctx = [])
 {
     extract($ctx);
     require base_path(
-        \WEB_DIR . URL['path'] . \COMPONENTS_DIR_NAME . "/$name.php"
+        \WEB_DIR . URL['path'] . \COMPONENTS_DIR_NAME . "$name.php"
     );
 }
 
@@ -80,7 +80,7 @@ function snip($name, $ctx = [])
 function partials($name, $ctx = [])
 {
     extract($ctx);
-    require base_path(\PARTIALS_DIR . "/$name.php");
+    require base_path(\PARTIALS_DIR . "$name.php");
 }
 
 /**
