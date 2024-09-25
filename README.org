@@ -20,7 +20,7 @@ For development I like to use php built-ins web server. Create a =Makefile= at t
 
   run:
       @echo "starting server..."
-      @php -S localhost:8080 -t ./public/ --php-ini=./php.ini # optional, I don't like to mess with my global php.ini
+      @php -S localhost:8080 -t ./public/ --php-ini=./php.ini
 
   # add more stuff as you go
 #+end_src
@@ -97,10 +97,10 @@ I don't plan on supporting this more than what I need. If you have something to 
  * [ ] Find a way to fix this:
    - =/obj/:name(word)= would translate to =$obj_name= and =/prop/:name(word)= would become =$prop_name=.
    - How the =\tusk\view()= would handle =/obj/:name(word)/section=?
-   #+begin_src php
-     const route = new Route(URL['path']);
-     route
-         ->path('/obj/:name(word)/section', 'web/obj/section/')
-         ->path('/api/obj/:name(word)/props', 'api/obj/props.php')
-         ->path('/api/obj/:name(word)/prop/:name(word)', 'api/obj/prop_name.php')
-   #+end_src
+     #+begin_src php
+       const route = new Route(URL['path']);
+       route
+           ->path('/obj/:name(word)/section', 'web/obj/section/')
+           ->path('/api/obj/:name(word)/props', 'api/obj/props.php')
+           ->path('/api/obj/:name(word)/prop/:name(word)', 'api/obj/prop_name.php')
+     #+end_src
