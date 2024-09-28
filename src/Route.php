@@ -7,20 +7,38 @@ use function tusk\http\header\redirect;
 class Route
 {
     private array $params = [];
+    private string $route;
 
     public function __construct(
         public readonly string $path,
     ) {}
 
-    public function redirect(string $from, string $to)
+    /**
+     * Redirects the request to the specified path
+     *
+     * @param string $from
+     * @param string $to
+     *
+     * @return Route
+     */
+    public function redirect($from, $to)
     {
         if ($this->path === $from) redirect($to);
         return $this;
     }
 
+    /**
+     * Forwards the request to the specified controller
+     *
+     * @param string $route The expected requested path.
+     * @param string $controller_route The route to the controller.
+     *
+     * @return Route
+     */
     public function path($route, $controller_route)
     {
         if ($this->parse_url_params($route) || $this->path === $route) {
+            $this->route = $this->remove_params($route);
             controller($controller_route);
             exit(0);
         }
@@ -45,6 +63,19 @@ class Route
     }
 
     /**
+     * Resolves a view using the route passed to the `Route::path` method.
+     *
+     * @param array $ctx Any variable that should be available in the path.
+     *
+     * @return void
+     */
+    public function view($ctx = [])
+    {
+        extract($ctx, EXTR_SKIP);
+        require_once base_path(\WEB_DIR . $this->route. "view.php");
+    }
+
+    /**
      * @return boolean
      */
     private function parse_url_params($route)
@@ -63,10 +94,10 @@ class Route
             $parsed_route = preg_replace('/\//', '\/', $parsed_route);
 
             // check if the route ends with a route param or not
-            $parsed_route_regex =
-                count(preg_grep("/^.*:[a-z]+\((word|number)\)$/", [$route])) > 0
-                ? "/$parsed_route$/"
-                : "/$parsed_route/";
+            $ress = preg_grep("/^.*:[a-z]+\((word|number)\)$/", [$route]);
+            $parsed_route_regex = count($res) > 0 ?
+                                  "/$parsed_route$/" :
+                                  "/$parsed_route/";
 
             preg_match($parsed_route_regex, $this->path, $output);
 
@@ -77,5 +108,17 @@ class Route
         }
 
         return false;
+    }
+
+    /**
+     * @param string $route
+     */
+    private function remove_params($route)
+    {
+        return preg_replace(
+            "/:[a-z]+\((word|number)\)(\/)?/",
+            "",
+            $route
+        );
     }
 }
