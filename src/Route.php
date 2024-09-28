@@ -94,7 +94,7 @@ class Route
             $parsed_route = preg_replace('/\//', '\/', $parsed_route);
 
             // check if the route ends with a route param or not
-            $ress = preg_grep("/^.*:[a-z]+\((word|number)\)$/", [$route]);
+            $res = preg_grep("/^.*:[a-z]+\((word|number)\)$/", [$route]);
             $parsed_route_regex = count($res) > 0 ?
                                   "/$parsed_route$/" :
                                   "/$parsed_route/";
