@@ -6,12 +6,14 @@ use function tusk\http\header\redirect;
 
 class Route
 {
+    public readonly string $path;
     private array $params = [];
     private string $route;
 
-    public function __construct(
-        public readonly string $path,
-    ) {}
+    public function __construct()
+    {
+        $this->path = URL['path'];
+    }
 
     /**
      * Redirects the request to the specified path
@@ -80,17 +82,19 @@ class Route
      */
     private function parse_url_params($route)
     {
-        $var_type_regex = '/:([A-Za-z]+)\((word|number)\)/';
+        $var_regex = ':([A-Za-z]+)';
+        $type_regex = '\((word|number)\)';
+        $var_type_regex = '/' . $var_regex . $type_regex . '/';
 
         if (preg_match($var_type_regex, $route, $output)) {
             $param = ['name' => $output[1], 'type'=> $output[2]];
-            $type_regex = match ($param['type']) {
-                'word' => '[a-z]+',
+            $replace_type_regex = match ($param['type']) {
+                'word' => '[a-z]+(_[a-z]+)*',
                 'number' => '\d+',
             };
 
-            $type_replace_regex ='/:([A-Za-z]+)(\((word|number)\))?/';
-            $parsed_route = preg_replace($type_replace_regex, "($type_regex)", $route);
+            $type_replace_regex = "/$var_regex($type_regex)?/";
+            $parsed_route = preg_replace($type_replace_regex, "($replace_type_regex)", $route);
             $parsed_route = preg_replace('/\//', '\/', $parsed_route);
 
             // check if the route ends with a route param or not
