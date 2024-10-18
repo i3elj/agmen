@@ -23,17 +23,18 @@ function middleware($route, ...$mc)
  * Calls the `main.php` controller of a specific `$route`.
  *
  * @param string $route Route
+ * @param string $prefix Route's prefix
  *
  * @return void
  */
-function controller($route)
+function controller($route, $prefix)
 {
     if (is_file(base_path($route))) {
         require_once base_path($route);
         return;
     }
 
-    require_once base_path($route . "main.php");
+    require_once base_path($prefix . $route);
 }
 
 /**
