@@ -39,7 +39,7 @@ DB_NAME=dbname
 #+end_src
 
 ** Directories and Files
-Tusk expect a route based directory structure. Every endpoint has a corresponding directory. Pages goes inside =web/=, it expects a =main.php= for the controller and a =view.php= for it's view if it has one. If you plan on doing purely REST API's you can pass the entire path to the file instead of just the route e.g.
+Tusk expect a route based directory structure. Every endpoint has a corresponding directory. Pages goes inside =WEB_DIR=, you can point to a =main.php= file if you want to your view and controller to be separate or you can just point to any normal file. If you decide to use a separate view, name the view in the same directory of your =main.php= as =view.php= and access it in your controller using the =view()= function. If you plan on doing purely REST API's you can pass the entire path to the file instead of just the route e.g.
 
 #+begin_src php
   controller("web/my/route.php");
@@ -51,27 +51,25 @@ Tusk expect a route based directory structure. Every endpoint has a correspondin
 #+begin_src php
   return [
       // The WEB_DIR constant tells where the pages are. Same for the API_DIR
-      "WEB_DIR"             => "web",
-      "API_DIR"             => "api",
-
+      "WEB_DIR"             => "web/pages",
+      "API_DIR"             => "web/hx",
       // Name of the dir each route will have for small pieces of html snippets
       // Example: web/home/snippets/contact_form.php
       "COMPONENTS_DIR_NAME" => "snippets",
-
       // Where tusk should look for important and reproducible html, like <head/>,
       // <nav/>, <footer/>, etc...
-      "PARTIALS_DIR"        => "web/partials",
-
+      "PARTIALS_DIR"        => "web/pages/partials",
       // Directory for tusk to look when using tusk\icon() and tusk\svg()
       "ICONS_DIR"           => "public/svg/icons",
       "SVG_DIR"             => "public/svg",
-
       // Where error pages are located, like the famous "404 Not Found :("
-      "ERROR_PAGES_DIR"     => "web/errors",
+      "ERROR_PAGES_DIR"     => "web/pages/errors",
   ];
-#+end_src
+  src
 
 ** Index.php example
+Now you can use a =Route= class to define the paths.
+
 #+begin_src php
   use tusk\Route;
 
