@@ -7,15 +7,16 @@ namespace tusk;
  * the controller is called. Every middleware should take care of solving
  * the "otherwise" branch. Generally they exit(1).
  *
- * @param string $route Route
- * @param string ...$mc Middleware classes
+ * @param string $route Route.
+ * @param string $prefix Route's prefix.
+ * @param string ...$mc Middleware classes.
  *
  * @return void
  */
-function middleware($route, ...$mc)
+function middleware($route, $prefix, ...$mc)
 {
     if (array_reduce($mc, fn($carry, $m) => $carry && $m::run(), true)) {
-        controller($route);
+        controller($route, $prefix);
     }
 }
 

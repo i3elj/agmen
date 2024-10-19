@@ -49,13 +49,33 @@ class Route
     }
 
     /**
-      * Forwards the request to the specified controller
-      *
-      * @param string $route The expected requested path.
-      * @param string $controller_route The route to the controller.
-      *
-      * @return Route
-      */
+     * Forwards the request to the specified controller
+     *
+     * @param string $route The expected requested path.
+     * @param string $controller_route The route to the controller.
+     * @param array $middlewares Every middleware that will be applied to the route.
+     *
+     * @return Route
+     */
+    public function pathM($route, $controller_route, ...$middlewares)
+    {
+        if ($this->parse_url_params($route) || $this->path === $route) {
+            $this->route = $this->remove_params($route);
+            middleware($controller_route, \WEB_DIR, $middlewares);
+            exit(0);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Forwards the request to the specified controller
+     *
+     * @param string $route The expected requested path.
+     * @param string $controller_route The route to the controller.
+     *
+     * @return Route
+     */
     public function api($route, $controller_route)
     {
         if ($this->parse_url_params($route) || $this->path === $route) {
