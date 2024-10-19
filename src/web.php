@@ -82,7 +82,7 @@ function snip($s, $ctx = [])
 function partials($name, $ctx = [])
 {
     extract($ctx);
-    require base_path(\PARTIALS_DIR . "$name.php");
+    require base_path(\PARTIALS_DIR . "/$name.php");
 }
 
 /**
@@ -93,18 +93,18 @@ function partials($name, $ctx = [])
  */
 function error_page($name)
 {
-    require_once base_path(\ERROR_PAGES_DIR . "$name.php");
+    require_once base_path(\ERROR_PAGES_DIR . "/$name.php");
     exit(1);
 }
 
-function icon(string $name, array $ctx = []): void
+function icon(string $name, string $extension = "svg", array $ctx = []): void
 {
     extract($ctx);
-    require base_path(\ICONS_DIR . "$name.svg");
+    require base_path(\ICONS_DIR . "/$name.$extension");
 }
 
 function svg(string $name, array $ctx = []): void
 {
     extract($ctx);
-    require base_path(\SVG_DIR . "$name.svg");
+    require base_path(\SVG_DIR . "/$name.svg");
 }
