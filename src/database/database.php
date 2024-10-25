@@ -101,7 +101,7 @@ class Database
      *
      * @param string $query  The query you want to run
      * @param array  $values All the values the query needs
-     * @return array
+     * @return array $rows, $count
      */
     public function sqlR($query, ...$values)
     {

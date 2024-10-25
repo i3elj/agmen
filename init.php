@@ -1,6 +1,8 @@
 <?php declare(strict_types=1);
 
-define("URL", parse_url($_SERVER['REQUEST_URI']));
+if (array_key_exists('REQUEST_URI', $_SERVER)) {
+    define("URL", parse_url($_SERVER['REQUEST_URI']));
+}
 
 /**
  * Applies the a base path for the rest of the library
