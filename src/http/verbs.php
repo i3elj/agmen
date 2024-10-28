@@ -3,7 +3,7 @@
 
 namespace tusk\http;
 
-function POST(string $key, bool $opt = false, $default = null): string | array | null
+function POST(string $key, bool $opt = false, $default = null): string | int | array | null
 {
     if (count($_POST) == 0 && !$opt) status\bad_request();
     if (count($_POST) == 0 && $opt) return $default;
@@ -18,7 +18,7 @@ function POST(string $key, bool $opt = false, $default = null): string | array |
     return $result;
 }
 
-function GET(string $key, bool $opt = false, $default = null): string | array | null
+function GET(string $key, bool $opt = false, $default = null): string | int | array | null
 {
     if (count($_GET) == 0 && !$opt) status\bad_request();
     if (count($_GET) == 0 && $opt) return $default;
@@ -33,9 +33,12 @@ function GET(string $key, bool $opt = false, $default = null): string | array | 
     return $result;
 }
 
-function FILES(string $key): array
+function FILES(string $key, bool $opt = false, $default = null): array | null
 {
-    $files = $_FILES[$key];
+    if (count($_FILES) == 0 && !$opt) status\bad_request();
+    if (count($_FILES) == 0 && $opt) return $default;
+
+    $result = $_FILES[$key];
     $transposed_files = [];
 
     foreach ($files["name"] as $i => $name)
