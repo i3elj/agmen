@@ -1,12 +1,11 @@
 <?php declare(strict_types=1);
-// TODO: escape and clean data sent through requests
 
 namespace tusk\http;
 
-function POST(string $key, bool $opt = false, $default = null): string | int | array | null
+function POST(string $key, $default = null): string | int | array | null
 {
-    if (count($_POST) == 0 && !$opt) status\bad_request();
-    if (count($_POST) == 0 && $opt) return $default;
+    if (!array_key_exists($key, $_POST) && !isset($default)) status\bad_request();
+    if (!array_key_exists($key, $_POST) && isset($default)) return $default;
 
     $result = $_POST[$key];
 
@@ -20,8 +19,8 @@ function POST(string $key, bool $opt = false, $default = null): string | int | a
 
 function GET(string $key, bool $opt = false, $default = null): string | int | array | null
 {
-    if (count($_GET) == 0 && !$opt) status\bad_request();
-    if (count($_GET) == 0 && $opt) return $default;
+    if (!array_key_exists($key, $_GET) && !isset($default)) status\bad_request();
+    if (!array_key_exists($key, $_GET) && isset($default)) return $default;
 
     $result = $_GET[$key];
 
@@ -33,16 +32,15 @@ function GET(string $key, bool $opt = false, $default = null): string | int | ar
     return $result;
 }
 
-function FILES(string $key, bool $opt = false, $default = null): array | null
+function FILES(string $key, $default = null): array | null
 {
-    if (count($_FILES) == 0 && !$opt) status\bad_request();
-    if (count($_FILES) == 0 && $opt) return $default;
+    if (!array_key_exists($key, $_FILES) && !isset($default)) status\bad_request();
+    if (!array_key_exists($key, $_FILES) && isset($default)) return $default;
 
-    $result = $_FILES[$key];
+    $files = $_FILES[$key];
     $transposed_files = [];
 
-    foreach ($files["name"] as $i => $name)
-    {
+    foreach ($files["name"] as $i => $name) {
         array_push($transposed_files, [
             "filename" => $name,
             "tmp_name" => $files["tmp_name"][$i],
