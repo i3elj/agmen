@@ -18,7 +18,7 @@ function POST(string $key, bool $opt = false, $default = null): string | array |
     return $result;
 }
 
-function GET(string $key, bool $opt = false): string | array | null
+function GET(string $key, bool $opt = false, $default = null): string | array | null
 {
     if (count($_GET) == 0 && !$opt) status\bad_request();
     if (count($_GET) == 0 && $opt) return $default;
