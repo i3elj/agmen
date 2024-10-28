@@ -3,10 +3,10 @@
 
 namespace tusk\http;
 
-function POST(string $key, bool $opt = false): string | array | null
+function POST(string $key, bool $opt = false, $default = null): string | array | null
 {
     if (count($_POST) == 0 && !$opt) status\bad_request();
-    if (count($_POST) == 0 && $opt) return null;
+    if (count($_POST) == 0 && $opt) return $default;
 
     $result = $_POST[$key];
 
@@ -21,7 +21,7 @@ function POST(string $key, bool $opt = false): string | array | null
 function GET(string $key, bool $opt = false): string | array | null
 {
     if (count($_GET) == 0 && !$opt) status\bad_request();
-    if (count($_GET) == 0 && $opt) return null;
+    if (count($_GET) == 0 && $opt) return $default;
 
     $result = $_GET[$key];
 
