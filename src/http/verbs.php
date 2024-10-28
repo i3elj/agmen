@@ -17,7 +17,7 @@ function POST(string $key, $default = null): string | int | array | null
     return $result;
 }
 
-function GET(string $key, bool $opt = false, $default = null): string | int | array | null
+function GET(string $key, $default = null): string | int | array | null
 {
     if (!array_key_exists($key, $_GET) && !isset($default)) status\bad_request();
     if (!array_key_exists($key, $_GET) && isset($default)) return $default;
