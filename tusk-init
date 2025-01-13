@@ -26,13 +26,13 @@ fwrite($config_php, <<<PHP
 <?php
 
 return [
-	"WEB_DIR"             => "src/web/pages",
-	"API_DIR"             => "src/web/hx",
-	"COMPONENTS_DIR_NAME" => "src/web/snippets",
-	"PARTIALS_DIR"        => "src/web/pages/partials",
-	"ICONS_DIR"           => "public/svg/icons",
-	"SVG_DIR"             => "public/svg",
-	"ERROR_PAGES_DIR"     => "src/web/pages/errors",
+    "WEB_DIR"             => "src/web/pages",
+    "API_DIR"             => "src/web/api",
+    "COMPONENTS_DIR_NAME" => "src/web/components",
+    "PARTIALS_DIR"        => "src/web/partials",
+    "ICONS_DIR"           => "public/svg/icons",
+    "SVG_DIR"             => "public/svg",
+    "ERROR_PAGES_DIR"     => "src/web/pages/errors",
 ];
 PHP);
 fclose($config_php);
@@ -45,33 +45,33 @@ fwrite($makefile, <<<MAKEFILE
 setup: php-setup css-setup
 
 re-setup:
-	rm -rf ./libs ./bin ./public/css/ tailwind.config.js
-	make setup
+    rm -rf ./libs ./bin ./public/css/ tailwind.config.js
+    make setup
 
 php-setup:
-	mkdir ./libs
-	git clone https://www.github.com/r-odriguez/tusk ./libs/tusk
+    mkdir ./libs
+    git clone https://www.github.com/r-odriguez/tusk ./libs/tusk
 
 css-setup:
-	mkdir ./bin
-	curl -Lo  ./bin/tailwindcss https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64
-	chmod u+x ./bin/tailwindcss
-	./bin/tailwindcss init
-	mkdir ./public/css && touch ./public/css/input.css
-	echo "@tailwind base;" >> ./public/css/input.css
-	echo "@tailwind components;" >> ./public/css/input.css
-	echo "@tailwind utilities;" >> ./public/css/input.css
+    mkdir ./bin
+    curl -Lo  ./bin/tailwindcss https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64
+    chmod u+x ./bin/tailwindcss
+    ./bin/tailwindcss init
+    mkdir ./public/css && touch ./public/css/input.css
+    echo "@tailwind base;" >> ./public/css/input.css
+    echo "@tailwind components;" >> ./public/css/input.css
+    echo "@tailwind utilities;" >> ./public/css/input.css
 
 update:
-	cd libs/tusk/ && git pull
+    cd libs/tusk/ && git pull
 
 php:
-	@echo "starting server"
-	@php -S localhost:8080 -t ./public/
+    @echo "starting server"
+    @php -S localhost:8080 -t ./public/
 
 css:
-	@echo "starting tailwind server"
-	@./bin/tailwindcss -i public/css/input.css -o public/css/output.css --watch
+    @echo "starting tailwind server"
+    @./bin/tailwindcss -i public/css/input.css -o public/css/output.css --watch
 MAKEFILE);
 
 
