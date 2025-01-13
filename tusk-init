@@ -83,3 +83,30 @@ fwrite($src_web_pages_home_php, <<<PHP
 <h1>Hello World</h1>
 PHP);
 fclose($src_web_pages_home_php);
+
+/*************/
+/* gitignore */
+/*************/
+$gitignore = fopen('.gitignore', 'w');
+fwrite($gitignore, <<<GIT
+libs/
+bin/
+.env
+GIT);
+fclose($gitignore);
+
+/*************/
+/* gitignore */
+/*************/
+$env = fopen('.env', 'w');
+fwrite($env, <<<GIT
+DB=sqlite # sqlite, pgsql e mysql
+DB_URL=db.sqlite
+# works for pgsql e mysql
+DB_HOST=localhost
+DB_PORT=8080
+DB_USER=admin
+DB_PASSWORD=admin
+DB_NAME=dbname
+GIT);
+fclose($env);
