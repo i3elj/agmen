@@ -26,13 +26,12 @@ fwrite($config_php, <<<PHP
 <?php
 
 return [
-    "WEB_DIR"             => "src/web/pages",
-    "API_DIR"             => "src/web/api",
-    "COMPONENTS_DIR_NAME" => "src/web/components",
-    "PARTIALS_DIR"        => "src/web/partials",
+    "WEB_DIR"             => "src/www",
+    "COMPONENTS_DIR_NAME" => "snippets",
+    "PARTIALS_DIR"        => "src/partials",
     "ICONS_DIR"           => "public/svg/icons",
     "SVG_DIR"             => "public/svg",
-    "ERROR_PAGES_DIR"     => "src/web/pages/errors",
+    "ERROR_PAGES_DIR"     => "src/www/errors",
 ];
 PHP);
 fclose($config_php);
