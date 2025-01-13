@@ -1,19 +1,28 @@
 #+title: Tusk
 
-a simple opinionated web library to be used alongside nginx or apache
+A simple opinionated web library to be used alongside nginx or apache.
+
+* Installation
+#+begin_src bash
+  wget https://raw.githubusercontent.com/r-odriguez/tusk/refs/heads/main/tusk-init -O ~/.local/bin/ && chmod u+x ~/.local/bin/tusk-init
+#+end_src
 
 * How to use it
-Create a public folder with your =index.php= there and just:
+** Using tusk-init script
+Create your project folder, open it in your terminal and run =tusk-init= on it.
+
+** Setting up from scratch
+Create a public folder with your =index.php= there and just require it:
 
 #+begin_src php
   const BASE_PATH = __DIR__ . '/../';
   require BASE_PATH . 'libs/tusk/init.php';
 #+end_src
 
-It is necessary to have a =config.php= for configuring where should tusk look for things. I recommend creating a =globals.php= too, for variables that uses =define()=.
+It is necessary to have a =config.php= so tusk knows where to look for things. I recommend creating a =globals.php= too, for variables that uses =define()=.
 
 ** Local Development
-For development I like to use php built-ins web server. Create a =Makefile= at the top level with the following:
+For development I like to use php built-in web server. Create a =Makefile= at the top level with the following:
 
 #+begin_src makefile
   all: run
@@ -39,7 +48,7 @@ DB_NAME=dbname
 #+end_src
 
 ** Directories and Files
-Tusk expect a route based directory structure. Every endpoint has a corresponding directory. Pages goes inside =WEB_DIR=, you can point to a =main.php= file if you want to your view and controller to be separate or you can just point to any normal file. If you decide to use a separate view, name the view in the same directory of your =main.php= as =view.php= and access it in your controller using the =view()= function. If you plan on doing purely REST API's you can pass the entire path to the file instead of just the route e.g.
+Tusk expect a route based directory structure. Every endpoint has a corresponding directory. Pages goes inside =WEB_DIR=, you can point to a =main.php= file if you want your view and controller to be separate or you can just point to any normal file. If you decide to use a separate view, name the view in the same directory of your =main.php= as =view.php= and access it in your controller using the =view()= function. If you plan on doing purely REST API's you can pass the entire path to the file instead of just the route e.g.
 
 #+begin_src php
   controller("web/my/route.php");
