@@ -49,7 +49,7 @@ re-setup:
 
 php-setup:
     mkdir ./libs
-    git clone https://www.github.com/r-odriguez/tusk ./libs/tusk
+    git clone https://www.github.com/r-odriguez/tusk ./libs/tusk --depth 1
 
 css-setup:
     mkdir ./bin
