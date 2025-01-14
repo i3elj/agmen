@@ -15,9 +15,9 @@ namespace tusk;
  */
 function middleware($route, $prefix, ...$mc)
 {
-    if (array_reduce($mc, fn($carry, $m) => $carry && $m::run(), true)) {
-        controller($route, $prefix);
-    }
+	if (array_reduce($mc, fn($carry, $m) => $carry && $m::run(), true)) {
+		controller($route, $prefix);
+	}
 }
 
 /**
@@ -30,12 +30,12 @@ function middleware($route, $prefix, ...$mc)
  */
 function controller($route, $prefix)
 {
-    if (is_file(base_path($route))) {
-        require_once base_path($route);
-        return;
-    }
+	if (is_file(base_path($prefix . $route))) {
+		require_once base_path($prefix . $route);
+		return;
+	}
 
-    require_once base_path($prefix . $route);
+	require_once base_path($prefix . $route . '/main.php');
 }
 
 /**
@@ -49,8 +49,8 @@ function controller($route, $prefix)
  */
 function view($ctx = [])
 {
-    extract($ctx);
-    require_once base_path(\WEB_DIR . URL['path'] . "/view.php");
+	extract($ctx);
+	require_once base_path(\WEB_DIR . URL['path'] . "/view.php");
 }
 
 /**
@@ -65,10 +65,10 @@ function view($ctx = [])
  */
 function snip($s, $ctx = [])
 {
-    extract($ctx);
-    require base_path(
-        \WEB_DIR . URL['path'] . '/' . \COMPONENTS_DIR_NAME . "$s.php"
-    );
+	extract($ctx);
+	require base_path(
+		\WEB_DIR . URL['path'] . '/' . \COMPONENTS_DIR_NAME . "$s.php"
+	);
 }
 
 /**
@@ -81,8 +81,8 @@ function snip($s, $ctx = [])
  */
 function partials($name, $ctx = [])
 {
-    extract($ctx);
-    require base_path(\PARTIALS_DIR . "/$name.php");
+	extract($ctx);
+	require base_path(\PARTIALS_DIR . "/$name.php");
 }
 
 /**
@@ -93,18 +93,18 @@ function partials($name, $ctx = [])
  */
 function error_page($name)
 {
-    require_once base_path(\ERROR_PAGES_DIR . "/$name.php");
-    exit(1);
+	require_once base_path(\ERROR_PAGES_DIR . "/$name.php");
+	exit(1);
 }
 
-function icon(string $name, string $extension = "svg", array $ctx = []): void
+function icon(string $name, string $ext = "svg", array $ctx = []): void
 {
-    extract($ctx);
-    require base_path(\ICONS_DIR . "/$name.$extension");
+	extract($ctx);
+	require base_path(\ICONS_DIR . "/$name.$ext");
 }
 
 function svg(string $name, array $ctx = []): void
 {
-    extract($ctx);
-    require base_path(\SVG_DIR . "/$name.svg");
+	extract($ctx);
+	require base_path(\SVG_DIR . "/$name.svg");
 }
