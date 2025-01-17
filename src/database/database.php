@@ -11,9 +11,7 @@ class Database
     private PDO $pdo;
     private static ?Database $instance = null;
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     /**
      * Connects to a database
@@ -78,7 +76,6 @@ class Database
     public function sql($query, ...$values)
     {
         $stmt = self::$instance->pdo->prepare($query);
-
         $succeeded = $stmt->execute([...$values]);
 
         if (!$succeeded) {
@@ -102,7 +99,6 @@ class Database
     {
         $file_content = file_get_contents(base_path($path));
         $stmt = self::$instance->pdo->prepare($file_content);
-
         $succeeded = $stmt->execute([...$values]);
 
         if (!$succeeded) {
@@ -124,7 +120,6 @@ class Database
     public function sqlr($query, ...$values)
     {
         $stmt = self::$instance->pdo->prepare($query);
-
         $succeeded = $stmt->execute([...$values]);
 
         if (!$succeeded) {
@@ -150,7 +145,6 @@ class Database
     {
         $file_content = file_get_contents(base_path($path));
         $stmt = self::$instance->pdo->prepare($file_content);
-
         $succeeded = $stmt->execute([...$values]);
 
         if (!$succeeded) {
@@ -167,7 +161,6 @@ class Database
     public function count($query_string, $values = [])
     {
         $stmt = self::$instance->pdo->prepare($query_string);
-
         $succeeded = $stmt->execute($values);
 
         if (!$succeeded) {

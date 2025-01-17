@@ -9,33 +9,49 @@ function POST(string $key, $default = null): string | int | array | null
 
     $result = $_POST[$key];
 
-    if (gettype($result) == "array")
-        foreach ($result as $i => $r) $result[$i] = htmlspecialchars($r);
-    else
+    if (gettype($result) == "array") {
+        foreach ($result as $i => $r) {
+            $result[$i] = htmlspecialchars($r);
+        }
+    } else {
         $result = htmlspecialchars($result);
+    }
 
     return $result;
 }
 
 function GET(string $key, $default = null): string | int | array | null
 {
-    if (!array_key_exists($key, $_GET) && !isset($default)) status\bad_request();
-    if (!array_key_exists($key, $_GET) && isset($default)) return $default;
+    if (!array_key_exists($key, $_GET) && !isset($default)) {
+        status\bad_request();
+    }
+
+    if (!array_key_exists($key, $_GET) && isset($default)) {
+        return $default;
+    }
 
     $result = $_GET[$key];
 
-    if (gettype($result) == "array")
-        foreach ($result as $i => $r) $result[$i] = htmlspecialchars($r);
-    else
+    if (gettype($result) == "array"){
+        foreach ($result as $i => $r) {
+            $result[$i] = htmlspecialchars($r);
+        }
+    } else {
         $result = htmlspecialchars($result);
+    }
 
     return $result;
 }
 
 function FILES(string $key, $default = null): array | null
 {
-    if (!array_key_exists($key, $_FILES) && !isset($default)) status\bad_request();
-    if (!array_key_exists($key, $_FILES) && isset($default)) return $default;
+    if (!array_key_exists($key, $_FILES) && !isset($default)) {
+        status\bad_request();
+    }
+    
+    if (!array_key_exists($key, $_FILES) && isset($default)) {
+        return $default;
+    }
 
     $files = $_FILES[$key];
     $transposed_files = [];

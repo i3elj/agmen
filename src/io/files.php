@@ -5,6 +5,7 @@ namespace tusk\io\files;
 function get_mime_type(string $filename): bool|string
 {
     $finfo = new \finfo(FILEINFO_MIME_TYPE);
+    
     if (!$finfo) {
         return false;
     }
