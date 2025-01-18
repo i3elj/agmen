@@ -73,16 +73,16 @@ function snip($s, $ctx = [])
 
 /**
  * Calls a specific html snippet that should be used sporadically, like
- * `<head/>` or `<nav/>`. Uses the `PARTIALS_DIR` global variable to locate
+ * `<head/>` or `<nav/>`. Uses the `GLOBALS_DIR` global variable to locate
  * the files.
  *
  * @param string $name The name of the file without the .php extension.
  * @param array $ctx Context variables that should be accessible in the view.
  */
-function partials($name, $ctx = [])
+function globals($name, $ctx = [])
 {
 	extract($ctx);
-	require base_path(\PARTIALS_DIR . "/$name.php");
+	require base_path(\GLOBALS_DIR . "/$name.php");
 }
 
 /**
