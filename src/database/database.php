@@ -9,6 +9,7 @@ use Exception;
 class Database
 {
     private PDO $pdo;
+    public static ?string $query_path = null;
     private static ?Database $instance = null;
 
     private function __construct() {}
@@ -97,7 +98,7 @@ class Database
      */
     public function sql_file($path, ...$values)
     {
-        $file_content = file_get_contents(base_path($path));
+        $file_content = file_get_contents(base_path(self::$query_path . $path));
         $stmt = self::$instance->pdo->prepare($file_content);
         $succeeded = $stmt->execute([...$values]);
 
@@ -143,7 +144,7 @@ class Database
      */
     public function sqlr_file($path, ...$values)
     {
-        $file_content = file_get_contents(base_path($path));
+        $file_content = file_get_contents(base_path(self::$query_path . $path));
         $stmt = self::$instance->pdo->prepare($file_content);
         $succeeded = $stmt->execute([...$values]);
 
