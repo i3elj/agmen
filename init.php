@@ -22,14 +22,18 @@ function import(string $path, array $ctx = [], int $index = 0): void
 
     if (is_dir($base)) {
         foreach (new DirectoryIterator($base) as $file) {
+            $filename = $file->getRealPath();
+
             if ($file->isDot()) {
                 continue;
             }
-            $filename = $file->getRealPath();
 
             if (is_dir($filename)) {
                 import($filename, index: 1);
-            } else {
+                continue;
+            } 
+
+            if (pathinfo($filename, PATHINFO_EXTENSION) == "php") {
                 extract($ctx);
                 require_once $filename;
             }
