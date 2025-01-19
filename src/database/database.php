@@ -9,7 +9,6 @@ use Exception;
 class Database
 {
     private PDO $pdo;
-    public static ?string $query_path = null;
     private static ?Database $instance = null;
 
     private function __construct() {}
@@ -92,13 +91,13 @@ class Database
      * Runs a query in the database using a file path as argument instead of a
      * query. The file should be a .sql file.
      *
-     * @param  string $path   The path to the .sql file containing your query.
+     * @param  string $path   The absolute path to the .sql file containing your query.
      * @param  array  $values All the values the query needs
      * @return PDO|int
      */
     public function sql_file($path, ...$values)
     {
-        $file_content = file_get_contents(base_path(self::$query_path . $path));
+        $file_content = file_get_contents($path);
         $stmt = self::$instance->pdo->prepare($file_content);
         $succeeded = $stmt->execute([...$values]);
 
@@ -138,13 +137,13 @@ class Database
      * Runs a query in the database and return the affected rows. This version
      * uses a .sql file instead of a query
      *
-     * @param  string $path   The path to the .sql file containing your query.
+     * @param  string $path   The absolute path to the .sql file containing your query.
      * @param  array  $values All the values the query needs.
      * @return array $rows, $count
      */
     public function sqlr_file($path, ...$values)
     {
-        $file_content = file_get_contents(base_path(self::$query_path . $path));
+        $file_content = file_get_contents($path);
         $stmt = self::$instance->pdo->prepare($file_content);
         $succeeded = $stmt->execute([...$values]);
 
