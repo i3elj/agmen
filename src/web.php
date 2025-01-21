@@ -9,11 +9,11 @@ namespace tusk;
  *
  * @param string $route Route.
  * @param string $prefix Route's prefix.
- * @param string ...$mc Middleware classes.
+ * @param array<int, string> $mc Middleware classes.
  *
  * @return void
  */
-function middleware($route, $prefix, ...$mc)
+function middleware($route, $prefix, $mc)
 {
 	if (array_reduce($mc, fn($carry, $m) => $carry && $m::run(), true)) {
 		controller($route, $prefix);
