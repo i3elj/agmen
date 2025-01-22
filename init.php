@@ -9,6 +9,6 @@ $vars = require __DIR__ . '/../../config.php';
 foreach ($vars as $key => $value)
     define("$key", $value);
 
-require_once "./src/global_functions.php";
+require_once __DIR__ . "/src/global_functions.php";
 
 import(__DIR__ . '/src', index: 1);
