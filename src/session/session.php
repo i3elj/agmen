@@ -2,9 +2,9 @@
 
 namespace tusk\session;
 
-function init(string $name = "SessionName")
+function init()
 {
-    session_name(SESSION_NAME ?? $name);
+    session_name();
     session_start();
     sign_guest();
 }
