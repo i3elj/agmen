@@ -29,7 +29,7 @@ function signed_user(): string|NULL
 function sign_guest(): void
 {
     if (!is_signed()) {
-        $_SESSION["guest"] = $_COOKIE[SESSION_NAME] ?? '';
+        $_SESSION["guest"] = $_COOKIE[session_name()] ?? '';
     }
 }
 
