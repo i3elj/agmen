@@ -1,0 +1,11 @@
+{
+  "name": "r-odriguez/tusk",
+  "description": "simple web library to work with Apache or NGiNX",
+  "type": "library",
+  "authors": [
+    {
+      "name": "Bernardo Rodriguez",
+      "email": "guisande.bernardo@gmail.com"
+    }
+  ]
+}
