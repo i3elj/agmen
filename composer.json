@@ -1,11 +1,19 @@
 {
-  "name": "r-odriguez/tusk",
-  "description": "simple web library to work with Apache or NGiNX",
-  "type": "library",
-  "authors": [
-    {
-      "name": "Bernardo Rodriguez",
-      "email": "guisande.bernardo@gmail.com"
-    }
-  ]
+    "name": "bern/tusk",
+    "description": "A simple web library",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Bern\\Tusk\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "r-odriguez",
+            "email": "guisande.bernardo@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
 }
