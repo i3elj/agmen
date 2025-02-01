@@ -35,13 +35,13 @@ It ~is~ isn't necessary (anymore) to have a `config.php` so tusk knows where to 
 For development I like to use php built-in web server. Create a `Makefile` at the top level with the following:
 
 ```makefile
-  all: run
+all: run
 
-  run:
-      @echo "starting server..."
-      @php -S localhost:8080 -t ./public/ --php-ini=./php.ini
+run:
+	@echo "starting server..."
+	@php -S localhost:8080 -t ./public/ --php-ini=./php.ini
 
-  # add more stuff as you go
+# add more stuff as you go
 ```
 
 You'll probably need a .env file with the following too:
