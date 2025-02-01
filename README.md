@@ -70,7 +70,7 @@ require BASE_PATH . 'vendor/r-odriguez/tusk/init.php';
 
 import('src/middlewares/'); // the import function can import an entire directory (only php files)
 
-const route = new tusk\Route(URL['path']);
+const route = new tusk\Route();
 route->redirect(from: '/', to: '/home')
 route->path('/home', '/home.php')
      ->path('/user/:age(number)', '/user/') // you can chain them
