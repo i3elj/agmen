@@ -1,11 +1,23 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace tusk\http;
 
 function POST(string $key, $default = null): string | int | array | null
 {
-    if (!array_key_exists($key, $_POST) && !isset($default)) status\bad_request();
-    if (!array_key_exists($key, $_POST) && isset($default)) return $default;
+    $key_was_sent = array_key_exists($key, $_POST);
+    $value_is_empty = strlen($_POST[$key]) == 0;
+    $key_was_sent_but_empty = $key_was_sent && $value_is_empty;
+    $default_is_set = isset($default);
+
+    if ((!$key_was_sent && !$default_is_set) || ($key_was_sent_but_empty && !$default_is_set)) {
+        status\bad_request();
+    }
+
+    if ((!$key_was_sent && $default_is_set) || ($key_was_sent_but_empty && $default_is_set)) {
+        return $default;
+    }
 
     $result = $_POST[$key];
 
@@ -22,17 +34,22 @@ function POST(string $key, $default = null): string | int | array | null
 
 function GET(string $key, $default = null): string | int | array | null
 {
-    if (!array_key_exists($key, $_GET) && !isset($default)) {
+    $key_was_sent = array_key_exists($key, $_GET);
+    $value_is_empty = strlen($_GET[$key]) == 0;
+    $key_was_sent_but_empty = $key_was_sent && $value_is_empty;
+    $default_is_set = isset($default);
+
+    if ((!$key_was_sent && !$default_is_set) || ($key_was_sent_but_empty && !$default_is_set)) {
         status\bad_request();
     }
 
-    if (!array_key_exists($key, $_GET) && isset($default)) {
+    if ((!$key_was_sent && $default_is_set) || ($key_was_sent_but_empty && $default_is_set)) {
         return $default;
     }
 
     $result = $_GET[$key];
 
-    if (gettype($result) == "array"){
+    if (gettype($result) == "array") {
         foreach ($result as $i => $r) {
             $result[$i] = htmlspecialchars($r);
         }
@@ -45,11 +62,16 @@ function GET(string $key, $default = null): string | int | array | null
 
 function FILES(string $key, $default = null): array | null
 {
-    if (!array_key_exists($key, $_FILES) && !isset($default)) {
+    $key_was_sent = array_key_exists($key, $_FILES);
+    $value_is_empty = strlen($_FILES[$key]) == 0;
+    $key_was_sent_but_empty = $key_was_sent && $value_is_empty;
+    $default_is_set = isset($default);
+
+    if ((!$key_was_sent && !$default_is_set) || ($key_was_sent_but_empty && !$default_is_set)) {
         status\bad_request();
     }
-    
-    if (!array_key_exists($key, $_FILES) && isset($default)) {
+
+    if ((!$key_was_sent && $default_is_set) || ($key_was_sent_but_empty && $default_is_set)) {
         return $default;
     }
 
