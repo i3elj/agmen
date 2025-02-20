@@ -171,4 +171,19 @@ class Database
 
         return $stmt->fetchColumn();
     }
+
+    public function beginTransaction()
+    {
+        self::$instance->pdo->beginTransaction();
+    }
+
+    public function commit()
+    {
+        self::$instance->pdo->commit();
+    }
+
+    public function rollback()
+    {
+        self::$instance->pdo->rollBack();
+    }
 }
