@@ -52,7 +52,7 @@ function BODY($key, $default = NULL): string | int | array | NULL
  * @param mixed $default     The default value to return if the key is not found.
  * @return string|int|array|NULL
  */
-function _parse_superglobal($superglobal, $key, $default = NULL): array
+function _parse_superglobal($superglobal, $key, $default = NULL): string|int|array|NULL
 {
     $key_was_sent = array_key_exists($key, $superglobal);
     $value_is_empty = strlen($superglobal[$key]) == 0;
