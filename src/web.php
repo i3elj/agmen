@@ -3,24 +3,6 @@
 namespace tusk;
 
 /**
- * Apply middlewares to a route. If every middleware returns true
- * the controller is called. Every middleware should take care of solving
- * the "otherwise" branch. Generally they exit(1).
- *
- * @param string $route Route.
- * @param string $prefix Route's prefix.
- * @param array<int, string> $mc Middleware classes.
- *
- * @return void
- */
-function middleware($route, $prefix, $mc)
-{
-	if (array_reduce($mc, fn($carry, $m) => $carry && $m::run(), true)) {
-		controller($route, $prefix);
-	}
-}
-
-/**
  * Calls the `main.php` controller of a specific `$route`.
  *
  * @param string $route Route
