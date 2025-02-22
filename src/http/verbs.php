@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace tusk\http;
 
+use function tusk\http\status\bad_request;
+
 /**
  * Returns the body of a POST request.
  * 
@@ -54,30 +56,25 @@ function BODY($key, $default = NULL): string | int | array | NULL
  */
 function _parse_superglobal($superglobal, $key, $default = NULL): string|int|array|NULL
 {
-    $key_was_sent = array_key_exists($key, $superglobal);
-    $value_is_empty = gettype($superglobal[$key]) == 'string' ? strlen($superglobal[$key]) == 0 : sizeof($superglobal[$key]) == 0;
-    $key_was_sent_but_empty = $key_was_sent && $value_is_empty;
-    $default_is_set = isset($default);
-
-    if ((!$key_was_sent && !$default_is_set) || ($key_was_sent_but_empty && !$default_is_set)) {
-        status\bad_request();
-    }
-
-    if ((!$key_was_sent && $default_is_set) || ($key_was_sent_but_empty && $default_is_set)) {
+    if (!array_key_exists($key, $superglobal)) {
+        if (!isset($default)) {
+            bad_request(false);
+            return NULL;
+        }
         return $default;
     }
 
-    $result = $superglobal[$key];
+    $value = $superglobal[$key];
 
-    if (gettype($result) == "array") {
-        foreach ($result as $i => $r) {
-            $result[$i] = htmlspecialchars($r);
+    if (gettype($value) == "array") {
+        foreach ($value as $i => $r) {
+            $value[$i] = htmlspecialchars($r);
         }
     } else {
-        $result = htmlspecialchars($result);
+        $value = htmlspecialchars($value);
     }
 
-    return $result;
+    return $value;
 }
 
 /**

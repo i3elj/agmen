@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace tusk;
 
@@ -26,7 +28,7 @@ class Database
 
         $ENV = parse_ini_file(base_path(".env"));
 
-        return $ENV["DB"] == "sqlite" 
+        return $ENV["DB"] == "sqlite"
             ? self::sqlite_connect($ENV)
             : self::server_connect($ENV, driver_name: $ENV["DB"]);
 
@@ -73,17 +75,17 @@ class Database
      * @param  array  $values All the values the query needs
      * @return PDO|int
      */
-    public function sql($query, ...$values)
+    public function sql($query, $values = [])
     {
         $stmt = self::$instance->pdo->prepare($query);
-        $succeeded = $stmt->execute([...$values]);
+        $succeeded = $stmt->execute($values);
 
         if (!$succeeded) {
             printf("Prepare statement error: " . $stmt);
             $stmt = null;
             exit(1);
         }
-
+        
         return self::$instance->pdo;
     }
 
@@ -95,11 +97,11 @@ class Database
      * @param  array  $values All the values the query needs
      * @return PDO|int
      */
-    public function sql_file($path, ...$values)
+    public function sql_file($path, $values = [])
     {
         $file_content = file_get_contents($path);
         $stmt = self::$instance->pdo->prepare($file_content);
-        $succeeded = $stmt->execute([...$values]);
+        $succeeded = $stmt->execute($values);
 
         if (!$succeeded) {
             printf("Prepare statement error: " . $stmt);
@@ -117,10 +119,10 @@ class Database
      * @param array  $values All the values the query needs
      * @return array $rows, $count
      */
-    public function sqlr($query, ...$values)
+    public function sqlr($query, $values = [])
     {
         $stmt = self::$instance->pdo->prepare($query);
-        $succeeded = $stmt->execute([...$values]);
+        $succeeded = $stmt->execute($values);
 
         if (!$succeeded) {
             printf("Prepare statement error: " . $stmt);
@@ -141,11 +143,11 @@ class Database
      * @param  array  $values All the values the query needs.
      * @return array $rows, $count
      */
-    public function sqlr_file($path, ...$values)
+    public function sqlr_file($path, $values = [])
     {
         $file_content = file_get_contents($path);
         $stmt = self::$instance->pdo->prepare($file_content);
-        $succeeded = $stmt->execute([...$values]);
+        $succeeded = $stmt->execute($values);
 
         if (!$succeeded) {
             printf("Prepare statement error: " . $stmt);
@@ -185,5 +187,10 @@ class Database
     public function rollback()
     {
         self::$instance->pdo->rollBack();
+    }
+
+    public function prepare($query_string)
+    {
+        return self::$instance->pdo->prepare($query_string);
     }
 }
