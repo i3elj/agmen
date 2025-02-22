@@ -55,7 +55,7 @@ function BODY($key, $default = NULL): string | int | array | NULL
 function _parse_superglobal($superglobal, $key, $default = NULL): string|int|array|NULL
 {
     $key_was_sent = array_key_exists($key, $superglobal);
-    $value_is_empty = strlen($superglobal[$key]) == 0;
+    $value_is_empty = gettype($superglobal[$key]) == 'string' ? strlen($superglobal[$key]) == 0 : sizeof($superglobal[$key]) == 0;
     $key_was_sent_but_empty = $key_was_sent && $value_is_empty;
     $default_is_set = isset($default);
 
