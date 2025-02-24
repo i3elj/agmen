@@ -4,9 +4,7 @@
     "type": "library",
     "license": "MIT",
     "autoload": {
-        "psr-4": {
-            "Bern\\Tusk\\": "src/"
-        }
+        "file": ["src/init.php"]
     },
     "authors": [
         {

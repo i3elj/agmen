@@ -58,7 +58,7 @@ class Router
 	 */
 	public function pathM($route, $controller_route, ...$middlewares)
 	{
-		if ($this->parse_url_params($route) || $this->path === $route) {
+		if ($this->match_url_with_route($route)) {
 			$this->route = $this->remove_params($route);
 			$this->middleware($controller_route, \WEB_DIR, $middlewares);
 			exit(0);
@@ -67,12 +67,17 @@ class Router
 		return $this;
 	}
 
-	public function middleware_group(array $middlewares, callable $callback) {
-		if (array_reduce($middlewares, fn($carry, $m) => $carry && $m::run(), true)) {
-			$callback();
+	public function middleware_group(array $middlewares, array $routes)
+	{
+		foreach ($routes as $route => $controller_route) {
+			if ($this->match_url_with_route($route)) {
+				$this->route = $this->remove_params($route);
+				$this->middleware($controller_route, \WEB_DIR, $middlewares);
+				exit(0);
+			}
 		}
 	}
-	
+
 	/**
 	 * Gets a specific url parameter by name.
 	 *
@@ -100,9 +105,14 @@ class Router
 		require_once base_path(\WEB_DIR . $this->route . "view.php");
 	}
 
+	private function match_url_with_route($route): bool
+	{
+		return $this->parse_url_params($route) || $this->path == $route;
+	}
+
 	/**
 	 * Parses the url parameters and stores them in the $params array.
-	 * 
+	 *
 	 * @param string $route
 	 * @return bool
 	 */
@@ -142,7 +152,7 @@ class Router
 
 	/**
 	 * Removes the parameters from the route.
-	 * 
+	 *
 	 * @param string $route
 	 * @return string
 	 */
