@@ -118,31 +118,56 @@ class Router
 	 */
 	private function parse_url_params($route)
 	{
-		$var_regex = ':([A-Za-z]+)';
-		$type_regex = '\((word|number)\)';
-		$var_type_regex = '/' . $var_regex . $type_regex . '/';
+		$param_name_regex = ':([a-zA-Z]+)';
+		$param_type_regex = '\((word|number)\)';
+		$full_param_regex = "/$param_name_regex$param_type_regex/";
 
-		if (preg_match($var_type_regex, $route, $output)) {
-			$param = ['name' => $output[1], 'type' => $output[2]];
-			$replace_type_regex = match ($param['type']) {
-				'word' => '[a-z]+(_[a-z]+)*',
-				'number' => '\d+',
-			};
+		if (preg_match_all($full_param_regex, $route, $matches)) {
+			$params = array_map(null, ...array_slice($matches, 1));
 
-			$type_replace_regex = "/$var_regex($type_regex)?/";
-			$parsed_route = preg_replace($type_replace_regex, "($replace_type_regex)", $route);
-			$parsed_route = preg_replace('/\//', '\/', $parsed_route);
+			for ($i = 0; $i < sizeof($params); $i++) {
+				$type_based_regex = match ($params[$i][1]) {
+					'word' => '[A-Za-z]+',
+					'number' => '\d+',
+					default => exit
+				};
+
+				array_push($params[$i], $type_based_regex);
+			}
+
+			$type_replace_regex = "/$param_name_regex($param_type_regex)?/";
+
+			$route_with_types = preg_replace_callback(
+				$type_replace_regex,
+				function ($matches) {
+					return ($matches[2] === "(word)")
+						? "([A-Za-z]+)"
+						: "(\d+)";
+				},
+				$route
+			);
+
+			$route_with_backslashes = preg_replace('/\//', '\/', $route_with_types);
 
 			// check if the route ends with a route param or not
-			$res = preg_grep("/^.*:[a-z]+\((word|number)\)$/", [$route]);
-			$parsed_route_regex = count($res) > 0 ?
-				"/$parsed_route$/" :
-				"/$parsed_route/";
+			preg_match('/\(.*\)$/', $route_with_backslashes, $end_route_matches);
 
-			preg_match($parsed_route_regex, $this->path, $output);
+			$parsed_route_regex = count($matches) > 0
+				? "$route_with_backslashes$"
+				: "$route_with_backslashes";
 
-			if (count($output) > 0) {
-				$this->params[$param['name']] = $output[1];
+
+			preg_match("/$parsed_route_regex/", $this->path, $matches);
+
+			if (count($matches) > 0) {
+				$param_names = array_map(fn($v) => $v[0], $params);
+				$param_values = array_slice($matches, 1);
+				$params = array_map(null, $param_names, $param_values);
+
+				foreach ($params as $param) {
+					$this->params[$param[0]] = $param[1];
+				}
+
 				return true;
 			}
 		}
@@ -158,11 +183,11 @@ class Router
 	 */
 	private function remove_params($route)
 	{
-		return preg_replace(
-			"/:[a-z]+\((word|number)\)(\/)?/",
+		return rtrim(preg_replace(
+			"/:[A-Za-z]+\((word|number)\)(\/)?/",
 			"",
 			$route
-		);
+		), '/');
 	}
 
 
