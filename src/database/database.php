@@ -99,7 +99,7 @@ class Database
      */
     public function sql_file($path, $values = [])
     {
-        $file_content = file_get_contents(base_path($path));
+        $file_content = file_get_contents($path);
         $stmt = self::$instance->pdo->prepare($file_content);
         $succeeded = $stmt->execute($values);
 
@@ -145,7 +145,7 @@ class Database
      */
     public function sqlr_file($path, $values = [])
     {
-        $file_content = file_get_contents(base_path($path));
+        $file_content = file_get_contents($path);
         $stmt = self::$instance->pdo->prepare($file_content);
         $succeeded = $stmt->execute($values);
 
