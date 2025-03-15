@@ -2,18 +2,8 @@
 
 namespace tusk\io\logs;
 
-function todo(string $filename, string $funcname, string $msg = '')
+function todo(string $msg = '')
 {
-    $fileinfo = pathinfo($filename);
-    $msg = "\n\t" . $msg;
-    error_log(
-        "\n\nTODO in $funcname() at {$fileinfo["dirname"]}/{$fileinfo["basename"]}"
-      . $msg,
-        0
-    );
-}
-
-function error(string $err)
-{
-    error_log($err, 0);
+    $e = new \Exception($msg);
+    error_log("TODO: {$e->getMessage()} at {$e->getTraceAsString()}", 0);
 }
