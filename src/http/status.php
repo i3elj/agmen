@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace tusk\http\status;
 
@@ -23,6 +25,12 @@ function not_found(bool $kill = true): void
 function method_not_allowed(bool $kill = true): void
 {
     http_response_code(405);
+    if ($kill) exit(1);
+}
+
+function unprocessable_entity(bool $kill = true): void
+{
+    http_response_code(422);
     if ($kill) exit(1);
 }
 
