@@ -119,19 +119,14 @@ class Router
 	private function parse_url_params($route)
 	{
 		$param_name_regex = ':([a-zA-Z]+)';
-		$param_type_regex = '\((word|number)\)';
+		$param_type_regex = '\((word|number|string)\)';
 		$full_param_regex = "/$param_name_regex$param_type_regex/";
 
 		if (preg_match_all($full_param_regex, $route, $matches)) {
 			$params = array_map(null, ...array_slice($matches, 1));
 
 			for ($i = 0; $i < sizeof($params); $i++) {
-				$type_based_regex = match ($params[$i][1]) {
-					'word' => '[A-Za-z]+',
-					'number' => '\d+',
-					default => exit
-				};
-
+				$type_based_regex = $this->get_type_regex($params[$i][1]);
 				array_push($params[$i], $type_based_regex);
 			}
 
@@ -139,11 +134,7 @@ class Router
 
 			$route_with_types = preg_replace_callback(
 				$type_replace_regex,
-				function ($matches) {
-					return ($matches[2] === "(word)")
-						? "([A-Za-z]+)"
-						: "(\d+)";
-				},
+				fn ($matches) => '(' . $this->get_type_regex(str_replace(['(', ')'], ['',''], $matches[2])) . ')',
 				$route
 			);
 
@@ -152,10 +143,7 @@ class Router
 			// check if the route ends with a route param or not
 			preg_match('/\(.*\)$/', $route_with_backslashes, $end_route_matches);
 
-			$parsed_route_regex = count($matches) > 0
-				? "$route_with_backslashes$"
-				: "$route_with_backslashes";
-
+			$parsed_route_regex = count($matches) > 0 ? "$route_with_backslashes$" : "$route_with_backslashes";
 
 			preg_match("/$parsed_route_regex/", $this->path, $matches);
 
@@ -175,6 +163,15 @@ class Router
 		return false;
 	}
 
+	private function get_type_regex($type_name): string {
+		return match ($type_name) {
+			'word' => '[A-Za-z]+',
+			'number' => '\d+',
+			'string' => '[A-Za-z0-9\-]+',
+			default => exit
+		};
+	}
+
 	/**
 	 * Removes the parameters from the route.
 	 *
@@ -189,7 +186,6 @@ class Router
 			$route
 		), '/');
 	}
-
 
 	/**
 	 * Apply middlewares to a route. If every middleware returns true
