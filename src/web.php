@@ -45,11 +45,11 @@ function view($ctx = [])
  *
  * @return void
  */
-function snip($s, $ctx = [])
+function snip($name, $ctx = [], $components_path = URL['path'])
 {
 	extract($ctx);
 	require base_path(
-		\WEB_DIR . URL['path'] . '/' . \COMPONENTS_DIR_NAME . "/$s.php"
+		\WEB_DIR . $components_path . '/' . \COMPONENTS_DIR_NAME . "/$name.php"
 	);
 }
 

@@ -11,6 +11,7 @@ class Router
 	public readonly string $path;
 	private array $params = [];
 	private string $route;
+	private string $base_route;
 
 	public function __construct()
 	{
@@ -105,6 +106,11 @@ class Router
 		require_once base_path(\WEB_DIR . $this->route . "view.php");
 	}
 
+	public function snip($name, $ctx = [])
+	{
+		snip($name, $ctx, $this->base_route);
+	}
+
 	private function match_url_with_route($route): bool
 	{
 		return $this->parse_url_params($route) || $this->path == $route;
@@ -123,6 +129,7 @@ class Router
 		$full_param_regex = "/$param_name_regex$param_type_regex/";
 
 		if (preg_match_all($full_param_regex, $route, $matches)) {
+			$this->base_route = preg_replace('/\/?:[a-zA-Z]+\((word|number|string)\)/', '', $route);
 			$params = array_map(null, ...array_slice($matches, 1));
 
 			for ($i = 0; $i < sizeof($params); $i++) {
@@ -186,6 +193,7 @@ class Router
 			$route
 		), '/');
 	}
+
 
 	/**
 	 * Apply middlewares to a route. If every middleware returns true
