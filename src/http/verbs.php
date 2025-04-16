@@ -2,10 +2,21 @@
 
 declare(strict_types=1);
 
-namespace tusk\http;
+namespace tusk\http\methods;
 
 use function tusk\http\status\bad_request;
+use function tusk\http\status\method_not_allowed;
 use function tusk\http\status\unprocessable_entity;
+
+function request($key, $type = 'string', $default = NULL): mixed
+{
+	return match($_SERVER['REQUEST_METHOD']) {
+		'GET' => _parse_superglobal($_GET, $key, $type, $default),
+		'POST' => _parse_superglobal($_POST, $key, $type, $default),
+		'PATCH', 'PUT', 'DELETE' => BODY($key, $type, $default),
+		default => method_not_allowed()
+	};
+}
 
 /**
  * Returns the body of a POST request.
@@ -16,7 +27,7 @@ use function tusk\http\status\unprocessable_entity;
  */
 function POST($key, $type = 'string', $default = NULL): mixed
 {
-    return _parse_superglobal($_POST, $key, $type, $default);
+	return _parse_superglobal($_POST, $key, $type, $default);
 }
 
 /**
@@ -28,7 +39,7 @@ function POST($key, $type = 'string', $default = NULL): mixed
  */
 function GET($key, $type = 'string', $default = NULL): mixed
 {
-    return _parse_superglobal($_GET, $key, $type, $default);
+	return _parse_superglobal($_GET, $key, $type, $default);
 }
 
 /**
@@ -40,9 +51,9 @@ function GET($key, $type = 'string', $default = NULL): mixed
  */
 function BODY($key, $type = 'string', $default = NULL): mixed
 {
-    $temp_arr = array();
-    parse_str(urldecode(file_get_contents('php://input')), $temp_arr);
-    return _parse_superglobal($temp_arr, $key, $type, $default);
+	$temp_arr = array();
+	parse_str(urldecode(file_get_contents('php://input')), $temp_arr);
+	return _parse_superglobal($temp_arr, $key, $type, $default);
 }
 
 /**
@@ -57,32 +68,32 @@ function BODY($key, $type = 'string', $default = NULL): mixed
  */
 function _parse_superglobal($superglobal, $key, $type, $default = NULL): mixed
 {
-    if (!array_key_exists($key, $superglobal)) {
-        if (!isset($default)) {
-            bad_request(false);
-            return NULL;
-        }
-        return $default;
-    }
+	if (!array_key_exists($key, $superglobal)) {
+		if (!isset($default)) {
+			bad_request(false);
+			return NULL;
+		}
+		return $default;
+	}
 
-    $value = $superglobal[$key];
+	$value = $superglobal[$key];
 
-    if (gettype($value) == "array") {
-        foreach ($value as $i => $r) {
-            $value[$i] = htmlspecialchars($r);
-        }
+	if (gettype($value) == "array") {
+		foreach ($value as $i => $r) {
+			$value[$i] = htmlspecialchars($r);
+		}
 
-        return $value;
-    }
+		return $value;
+	}
 
-    $value = htmlspecialchars($value);
-    $res = settype($value, $type);
+	$value = htmlspecialchars($value);
+	$res = settype($value, $type);
 
-    if ($res != 0) {
-        return $value;
-    }
+	if ($res != 0) {
+		return $value;
+	}
 
-    unprocessable_entity();
+	unprocessable_entity();
 }
 
 /**
@@ -94,29 +105,29 @@ function _parse_superglobal($superglobal, $key, $type, $default = NULL): mixed
  */
 function FILES(string $key, $default = NULL): array | NULL
 {
-    $key_was_sent = array_key_exists($key, $_FILES);
-    $value_is_empty = sizeof($_FILES[$key]) == 0;
-    $key_was_sent_but_empty = $key_was_sent && $value_is_empty;
-    $default_is_set = isset($default);
+	$key_was_sent = array_key_exists($key, $_FILES);
+	$value_is_empty = sizeof($_FILES[$key]) == 0;
+	$key_was_sent_but_empty = $key_was_sent && $value_is_empty;
+	$default_is_set = isset($default);
 
-    if ((!$key_was_sent && !$default_is_set) || ($key_was_sent_but_empty && !$default_is_set)) {
-        status\bad_request();
-    }
+	if ((!$key_was_sent && !$default_is_set) || ($key_was_sent_but_empty && !$default_is_set)) {
+		status\bad_request();
+	}
 
-    if ((!$key_was_sent && $default_is_set) || ($key_was_sent_but_empty && $default_is_set)) {
-        return $default;
-    }
+	if ((!$key_was_sent && $default_is_set) || ($key_was_sent_but_empty && $default_is_set)) {
+		return $default;
+	}
 
-    $files = $_FILES[$key];
-    $transposed_files = [];
+	$files = $_FILES[$key];
+	$transposed_files = [];
 
-    foreach ($files["name"] as $i => $name) {
-        array_push($transposed_files, [
-            "filename" => $name,
-            "tmp_name" => $files["tmp_name"][$i],
-            "error"    => $files["error"][$i]
-        ]);
-    }
+	foreach ($files["name"] as $i => $name) {
+		array_push($transposed_files, [
+			"filename" => $name,
+			"tmp_name" => $files["tmp_name"][$i],
+			"error"    => $files["error"][$i]
+		]);
+	}
 
-    return $transposed_files;
+	return $transposed_files;
 }
