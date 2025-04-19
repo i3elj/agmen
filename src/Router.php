@@ -68,6 +68,13 @@ class Router
 		return $this;
 	}
 
+	public function path_group($base_path, $routes)
+	{
+		foreach ($routes as $route => $controller_route) {
+			$this->path($base_path . $route, $base_path . $controller_route);
+		}
+	}
+
 	public function middleware_group(array $middlewares, array $routes)
 	{
 		foreach ($routes as $route => $controller_route) {
