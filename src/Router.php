@@ -61,7 +61,8 @@ class Router
 	{
 		if ($this->match_url_with_route($route)) {
 			$this->route = $this->remove_params($route);
-			$this->middleware($controller_route, \WEB_DIR, $middlewares);
+			foreach ($middlewares as $m) $m::run();
+			controller($controller_route, \WEB_DIR);
 			exit(0);
 		}
 
@@ -80,7 +81,8 @@ class Router
 		foreach ($routes as $route => $controller_route) {
 			if ($this->match_url_with_route($route)) {
 				$this->route = $this->remove_params($route);
-				$this->middleware($controller_route, \WEB_DIR, $middlewares);
+				foreach ($middlewares as $m) $m::run();
+				controller($controller_route, \WEB_DIR);
 				exit(0);
 			}
 		}
@@ -199,23 +201,5 @@ class Router
 			"",
 			$route
 		), '/');
-	}
-
-
-	/**
-	 * Apply middlewares to a route. If every middleware returns true
-	 * the controller is called. Every middleware should take care of solving
-	 * the "otherwise" branch. Generally they exit(1).
-	 *
-	 * @param string $route Route.
-	 * @param string $prefix Route's prefix.
-	 * @param array<int, string> $mc Middleware classes.
-	 * @return void
-	 */
-	private function middleware($route, $prefix, $mc)
-	{
-		if (array_reduce($mc, fn($carry, $m) => $carry && $m::run(), true)) {
-			controller($route, $prefix);
-		}
 	}
 }

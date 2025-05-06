@@ -27,7 +27,7 @@ class http
 	 * @param string $type	  The function will try to convert the value to this type. Throwing a 422 status code (e.g. unprocessable entity).
 	 * @param mixed  $default The default value to return if the key is not found.
 	 */
-	public static function POST($key, $type = 'string', $default = NULL): mixed
+	public static function post($key, $type = 'string', $default = NULL): mixed
 	{
 		return self::_parse_superglobal($_POST, $key, $type, $default);
 	}
@@ -39,7 +39,7 @@ class http
 	 * @param string $type     The function will try to convert the value to this type. Throwing a 422 status code (e.g. unprocessable entity).
 	 * @param mixed  $default  The default value to return if the key is not found.
 	 */
-	public static function GET($key, $type = 'string', $default = NULL): mixed
+	public static function get($key, $type = 'string', $default = NULL): mixed
 	{
 		return self::_parse_superglobal($_GET, $key, $type, $default);
 	}
@@ -51,7 +51,7 @@ class http
 	 * @param string $type    The function will try to convert the value to this type. Throwing a 422 status code (e.g. unprocessable entity).
 	 * @param mixed  $default The default value to return if the key is not found.
 	 */
-	public static function BODY($key, $type = 'string', $default = NULL): mixed
+	public static function body($key, $type = 'string', $default = NULL): mixed
 	{
 		$temp_arr = array();
 		parse_str(urldecode(file_get_contents('php://input')), $temp_arr);
@@ -68,7 +68,7 @@ class http
 	 * @param string $type       The function will try to convert the value to this type. Throwing a 422 status code (e.g. unprocessable entity).
 	 * @param mixed $default	 The default value to return if the key is not found.
 	 */
-	public static function _parse_superglobal($superglobal, $key, $type, $default = NULL): mixed
+	private static function _parse_superglobal($superglobal, $key, $type, $default = NULL): mixed
 	{
 		if (!array_key_exists($key, $superglobal)) {
 			if (!isset($default)) {
@@ -105,7 +105,7 @@ class http
 	 * @param mixed  $default The default value to return if the key is not found.
 	 * @return array|NULL
 	 */
-	public static function FILES(string $key, $default = NULL): array | NULL
+	public static function files(string $key, $default = NULL): array | NULL
 	{
 		$key_was_sent = array_key_exists($key, $_FILES);
 		$value_is_empty = sizeof($_FILES[$key]) == 0;

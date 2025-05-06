@@ -3,5 +3,5 @@
 namespace tusk;
 
 abstract class Middleware {
-    abstract public static function run(): bool;
+    abstract public static function run(): void;
 }

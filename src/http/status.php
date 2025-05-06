@@ -16,6 +16,12 @@ function bad_request(bool $kill = true): void
     if ($kill) exit(1);
 }
 
+function forbidden(bool $kill = true): void
+{
+    http_response_code(403);
+    if ($kill) exit(1);
+}
+
 function not_found(bool $kill = true): void
 {
     http_response_code(404);

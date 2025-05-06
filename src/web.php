@@ -45,11 +45,11 @@ function view($ctx = [])
  *
  * @return void
  */
-function snip($name, $ctx = [], $components_path = URL['path'])
+function snip($snip_name, $ctx = [], $components_path = URL['path'])
 {
 	extract($ctx);
 	require base_path(
-		\WEB_DIR . $components_path . '/' . \COMPONENTS_DIR_NAME . "/$name.php"
+		\WEB_DIR . $components_path . '/' . \COMPONENTS_DIR_NAME . "/$snip_name.php"
 	);
 }
 
@@ -89,4 +89,10 @@ function svg(string $name, array $ctx = []): void
 {
 	extract($ctx);
 	require base_path(\SVG_DIR . "/$name.svg");
+}
+
+function csrf()
+{
+	$csrf_token = session\get_csrf_token();
+	return "<input type='hidden' name='csrf-token' value='$csrf_token' />";
 }

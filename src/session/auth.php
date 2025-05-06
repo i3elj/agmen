@@ -6,6 +6,11 @@ function sign_in(string $email): void
 {
     $_SESSION["signed"] = true;
     $_SESSION["email"] = $email;
+
+    if (!isset($_SESSION['csrf_token'])) {
+        generate_csrf_token();
+    }
+
     unset($_SESSION["guest"]);
 }
 
@@ -13,6 +18,7 @@ function sign_out(): void
 {
     $_SESSION["signed"] = false;
     unset($_SESSION["email"]);
+    unset($_SESSION['csrf_token']);
     sign_guest();
 }
 
