@@ -11,7 +11,7 @@ class Router
 	public readonly string $path;
 	private array $params = [];
 	private array $routes;
-	private string $route;
+	private array $route;
 	private string $base_route;
 
 	public function __construct()
@@ -20,26 +20,11 @@ class Router
 	}
 
 	/**
-	 * Redirects the request to the specified path
+	 * Get the path value with the correspondig path name.
 	 */
-	public function path_redirect(string $from, string $to): Router
+	public function getPath(string $path_name): string
 	{
-		if ($this->path === $from) redirect($to);
-		return $this;
-	}
-
-	/**
-	 * Redirects to the path with the given name.
-	 */
-	public function redirect(string $path_name): Router
-	{
-		foreach ($this->routes as $route) {
-			if ($route['name'] === $path_name) {
-				redirect($route['path']);
-			}
-		}
-
-		return $this;
+		return $this->routes[$path_name]['path'];
 	}
 
 	/**
@@ -47,22 +32,11 @@ class Router
 	 */
 	public function path(string $path, string $controller, string $name, ?array $middlewares = []): Router
 	{
-		$this->routes[] = [ 
-			'path'       => $path,
-			'controller' => $controller,
-			'name'       => $name,
+		$this->routes[$name] = [ 
+			'path'        => $path,
+			'controller'  => $controller,
+			'middlewares' => $middlewares,
 		];
-
-		if ($this->match_url_with_route($path)) {
-			$this->route = $this->remove_params($path);
-			
-			foreach ($middlewares as $m) {
-				$m::run();
-			}
-
-			controller($controller, prefix: \WEB_DIR);
-			exit(0);
-		}
 
 		return $this;
 	}
@@ -80,6 +54,47 @@ class Router
 	}
 
 	/**
+	 * Handle the upcoming request.
+	 */
+	public function handle()
+	{
+		foreach ($this->routes as $route_name => $route) {
+			if ($this->match_url_with_route($route['path'])) {
+				$this->route = [
+					'name' => $route_name,
+					'path' => $route['path'],
+					'controller' => $route['controller'],
+					'middlewares' => $route['middlewares'],
+				];
+
+				foreach ($route['middlewares'] as $m) {
+					$m::run();
+				}
+
+				controller($route['controller'], prefix: \WEB_DIR);
+				exit(0);
+			}
+		}
+	}
+
+	/**
+	 * Redirects the request to the specified path
+	 */
+	public function pathRedirect(string $from, string $to): Router
+	{
+		if ($this->path === $from) redirect($to);
+		return $this;
+	}
+
+	/**
+	 * Redirects to the path with the given name.
+	 */
+	public function redirect(string $path_name): void
+	{
+		redirect($this->routes[$path_name]['path']);
+	}
+
+	/**
 	 * Resolves a view using the route passed to the `Route::path` method.
 	 */
 	public function view(array $ctx = []): void
@@ -94,6 +109,19 @@ class Router
 	public function snip(string $name, array $ctx = []): void
 	{
 		snip($name, $ctx, $this->base_route);
+	}
+
+	/**
+	 * Get the corresponding type from a regex. (e.g. word, number or string)
+	 */
+	private function get_type_regex(string $type_name): string 
+	{
+		return match ($type_name) {
+			'word' => '[A-Za-z]+',
+			'number' => '\d+',
+			'string' => '[A-Za-z0-9\-]+',
+			default => exit
+		};
 	}
 
 	/**
@@ -156,27 +184,10 @@ class Router
 	}
 
 	/**
-	 * Get the corresponding type from a regex. (e.g. word, number or string)
-	 */
-	private function get_type_regex(string $type_name): string 
-	{
-		return match ($type_name) {
-			'word' => '[A-Za-z]+',
-			'number' => '\d+',
-			'string' => '[A-Za-z0-9\-]+',
-			default => exit
-		};
-	}
-
-	/**
 	 * Removes the parameters from the route's path.
 	 */
 	private function remove_params(string $path): string
 	{
-		return rtrim(preg_replace(
-			"/:[A-Za-z]+\((word|number)\)(\/)?/",
-			"",
-			$path
-		), '/');
+		return rtrim(preg_replace("/:[A-Za-z]+\((word|number|string)\)(\/)?/", "", $path), '/');
 	}
 }
