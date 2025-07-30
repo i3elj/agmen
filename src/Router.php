@@ -10,6 +10,7 @@ class Router
 {
 	public readonly string $path;
 	private array $params = [];
+	private array $routes;
 	private string $route;
 	private string $base_route;
 
@@ -20,30 +21,22 @@ class Router
 
 	/**
 	 * Redirects the request to the specified path
-	 *
-	 * @param string $from
-	 * @param string $to
-	 * @return Route
 	 */
-	public function redirect($from, $to)
+	public function path_redirect(string $from, string $to): Router
 	{
 		if ($this->path === $from) redirect($to);
 		return $this;
 	}
 
 	/**
-	 * Forwards the request to the specified controller
-	 *
-	 * @param string $route The expected requested path.
-	 * @param string $controller_route The route to the controller.
-	 * @return Route
+	 * Redirects to the path with the given name.
 	 */
-	public function path($route, $controller_route)
+	public function redirect(string $path_name): Router
 	{
-		if ($this->parse_url_params($route) || $this->path === $route) {
-			$this->route = $this->remove_params($route);
-			controller($controller_route, prefix: \WEB_DIR);
-			exit(0);
+		foreach ($this->routes as $route) {
+			if ($route['name'] === $path_name) {
+				redirect($route['path']);
+			}
 		}
 
 		return $this;
@@ -51,50 +44,33 @@ class Router
 
 	/**
 	 * Forwards the request to the specified controller
-	 *
-	 * @param string $route The expected requested path.
-	 * @param string $controller_route The route to the controller.
-	 * @param array $middlewares Every middleware that will be applied to the route.
-	 * @return Route
 	 */
-	public function pathM($route, $controller_route, ...$middlewares)
+	public function path(string $path, string $controller, string $name, ?array $middlewares = []): Router
 	{
-		if ($this->match_url_with_route($route)) {
-			$this->route = $this->remove_params($route);
-			foreach ($middlewares as $m) $m::run();
-			controller($controller_route, \WEB_DIR);
+		$this->routes[] = [ 
+			'path'       => $path,
+			'controller' => $controller,
+			'name'       => $name,
+		];
+
+		if ($this->match_url_with_route($path)) {
+			$this->route = $this->remove_params($path);
+			
+			foreach ($middlewares as $m) {
+				$m::run();
+			}
+
+			controller($controller, prefix: \WEB_DIR);
 			exit(0);
 		}
 
 		return $this;
-	}
-
-	public function path_group($base_path, $routes)
-	{
-		foreach ($routes as $route => $controller_route) {
-			$this->path($base_path . $route, $base_path . $controller_route);
-		}
-	}
-
-	public function middleware_group(array $middlewares, array $routes)
-	{
-		foreach ($routes as $route => $controller_route) {
-			if ($this->match_url_with_route($route)) {
-				$this->route = $this->remove_params($route);
-				foreach ($middlewares as $m) $m::run();
-				controller($controller_route, \WEB_DIR);
-				exit(0);
-			}
-		}
 	}
 
 	/**
 	 * Gets a specific url parameter by name.
-	 *
-	 * @param string $name The name of the url parameter.
-	 * @return string|number|null
 	 */
-	public function param($name)
+	public function param(string $name): string|int|null
 	{
 		if (array_key_exists($name, $this->params)) {
 			return $this->params[$name];
@@ -105,40 +81,40 @@ class Router
 
 	/**
 	 * Resolves a view using the route passed to the `Route::path` method.
-	 *
-	 * @param array $ctx Any variable that should be available in the path.
-	 * @return void
 	 */
-	public function view($ctx = [])
+	public function view(array $ctx = []): void
 	{
 		extract($ctx, EXTR_SKIP);
 		require_once base_path(\WEB_DIR . $this->route . "view.php");
 	}
 
-	public function snip($name, $ctx = [])
+	/**
+	 * Returns a snip based on the router as the `component_path`
+	 */
+	public function snip(string $name, array $ctx = []): void
 	{
 		snip($name, $ctx, $this->base_route);
 	}
 
-	private function match_url_with_route($route): bool
+	/**
+	 * Matches the url with the given route path's.
+	 */
+	private function match_url_with_route(string $path): bool
 	{
-		return $this->parse_url_params($route) || $this->path == $route;
+		return $this->parse_url_params($path) || $this->path == $path;
 	}
 
 	/**
 	 * Parses the url parameters and stores them in the $params array.
-	 *
-	 * @param string $route
-	 * @return bool
 	 */
-	private function parse_url_params($route)
+	private function parse_url_params(string $path): bool
 	{
 		$param_name_regex = ':([a-zA-Z]+)';
 		$param_type_regex = '\((word|number|string)\)';
 		$full_param_regex = "/$param_name_regex$param_type_regex/";
 
-		if (preg_match_all($full_param_regex, $route, $matches)) {
-			$this->base_route = preg_replace('/\/?:[a-zA-Z]+\((word|number|string)\)/', '', $route);
+		if (preg_match_all($full_param_regex, $path, $matches)) {
+			$this->base_route = preg_replace('/\/?:[a-zA-Z]+\((word|number|string)\)/', '', $path);
 			$params = array_map(null, ...array_slice($matches, 1));
 
 			for ($i = 0; $i < sizeof($params); $i++) {
@@ -151,7 +127,7 @@ class Router
 			$route_with_types = preg_replace_callback(
 				$type_replace_regex,
 				fn ($matches) => '(' . $this->get_type_regex(str_replace(['(', ')'], ['',''], $matches[2])) . ')',
-				$route
+				$path
 			);
 
 			$route_with_backslashes = preg_replace('/\//', '\/', $route_with_types);
@@ -179,7 +155,11 @@ class Router
 		return false;
 	}
 
-	private function get_type_regex($type_name): string {
+	/**
+	 * Get the corresponding type from a regex. (e.g. word, number or string)
+	 */
+	private function get_type_regex(string $type_name): string 
+	{
 		return match ($type_name) {
 			'word' => '[A-Za-z]+',
 			'number' => '\d+',
@@ -189,17 +169,14 @@ class Router
 	}
 
 	/**
-	 * Removes the parameters from the route.
-	 *
-	 * @param string $route
-	 * @return string
+	 * Removes the parameters from the route's path.
 	 */
-	private function remove_params($route)
+	private function remove_params(string $path): string
 	{
 		return rtrim(preg_replace(
 			"/:[A-Za-z]+\((word|number)\)(\/)?/",
 			"",
-			$route
+			$path
 		), '/');
 	}
 }
