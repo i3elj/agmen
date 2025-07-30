@@ -6,7 +6,7 @@ namespace tusk\http;
 
 use function tusk\http\status\bad_request;
 use function tusk\http\status\method_not_allowed;
-use function tusk\http\status\unprocessable_entity;
+use function tusk\http\status\unprocessable_content;
 
 class http
 {
@@ -95,7 +95,8 @@ class http
 			return $value;
 		}
 
-		unprocessable_entity();
+		unprocessable_content();
+		return null;
 	}
 
 	/**
