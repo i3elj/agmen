@@ -2,6 +2,15 @@
 
 namespace tusk;
 
+use function tusk\http\status\method_not_allowed;
+
+function allowed_methods(string ...$methods)
+{
+	if (!in_array($_SERVER['REQUEST_METHOD'], $methods)) {
+		method_not_allowed();
+	}
+}
+
 /**
  * Calls the `main.php` controller of a specific `$route`.
  *
