@@ -38,10 +38,10 @@ function controller($route, $prefix)
  *
  * @return void
  */
-function view($ctx = [])
+function view(string $name = "view", $ctx = [])
 {
 	extract($ctx);
-	require_once base_path(\WEB_DIR . URL['path'] . "/view.php");
+	require_once base_path(\WEB_DIR . "/$name.view.php");
 }
 
 /**
@@ -57,8 +57,9 @@ function view($ctx = [])
 function snip($snip_name, $ctx = [], $components_path = URL['path'])
 {
 	extract($ctx);
+	$snip_name = str_replace('.', '/', $snip_name);
 	require base_path(
-		\WEB_DIR . $components_path . '/' . \COMPONENTS_DIR_NAME . "/$snip_name.php"
+		\WEB_DIR . \COMPONENTS_DIR_NAME . "$snip_name.php"
 	);
 }
 
@@ -84,7 +85,7 @@ function globals($name, $ctx = [])
  */
 function error_page($name)
 {
-	require_once base_path(\ERROR_PAGES_DIR . "/$name.php");
+	require_once base_path(\ERROR_PAGES_DIR . "$name.php");
 	exit(1);
 }
 

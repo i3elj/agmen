@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace tusk;
 
+use tusk\http\http;
+
 use function tusk\http\header\redirect;
+use function tusk\http\status\method_not_allowed;
 
 class Router
 {
@@ -12,33 +15,61 @@ class Router
 	private array $params = [];
 	private array $routes;
 	private array $route;
+	private string $prefix = "";
+	private array $middlewares = [];
 	private string $base_route;
 
 	public function __construct()
 	{
-		$this->path = URL['path'];
+		$this->path = URL["path"];
 	}
 
 	/**
 	 * Get the path value with the correspondig path name.
 	 */
-	public function getPath(string $path_name): string
+	public function getPath(string $path_name, ?array $params = null): string
 	{
-		return $this->routes[$path_name]['path'];
+		$uri = $this->routes[$path_name]['uri'];
+
+		if (isset($params)) {
+			foreach ($params as $var => $val) {
+				$uri = preg_replace("/(:$var\([A-Za-z]+\))/", $val, $uri);
+			}
+		}
+
+		return $uri;
 	}
 
 	/**
 	 * Forwards the request to the specified controller
 	 */
-	public function path(string $path, string $controller, string $name, ?array $middlewares = []): Router
+	public function path(string $uri, string $name, array $middlewares, string $handler, ?string $method = ""): Router
 	{
-		$this->routes[$name] = [ 
-			'path'        => $path,
-			'controller'  => $controller,
-			'middlewares' => $middlewares,
+		$fullUri = rtrim($this->prefix, "/") . "/" . ltrim($uri, "/");
+		$fullMiddleware = array_merge($this->middlewares, $middlewares);
+
+		$this->routes[$name] = [
+			"uri" => $fullUri,
+			"handler" => $handler,
+			"middlewares" => $fullMiddleware,
+			"method" => $method,
 		];
 
 		return $this;
+	}
+
+	public function group(string $prefix, array $middlewares, callable $callback)
+	{
+		$currentPrefix = $this->prefix;
+		$currentMiddleware = $this->middlewares;
+
+		$this->prefix = rtrim($currentPrefix, "/") . "/" . ltrim($prefix, "/");
+		$this->middlewares = array_merge($currentMiddleware, $middlewares);
+
+		$callback($this);
+
+		$this->prefix = $currentPrefix;
+		$this->middlewares = $currentMiddleware;
 	}
 
 	/**
@@ -59,20 +90,38 @@ class Router
 	public function handle()
 	{
 		foreach ($this->routes as $route_name => $route) {
-			if ($this->match_url_with_route($route['path'])) {
+			if ($this->match_url_with_route($route["uri"])) {
 				$this->route = [
-					'name' => $route_name,
-					'path' => $route['path'],
-					'controller' => $route['controller'],
-					'middlewares' => $route['middlewares'],
+					"name" => $route_name,
+					"uri" => $route["uri"],
+					"handler" => $route["handler"],
+					"middlewares" => $route["middlewares"],
+					"method" => $route["method"],
 				];
 
-				foreach ($route['middlewares'] as $m) {
+				foreach ($route["middlewares"] as $m) {
 					$m::run();
 				}
 
-				controller($route['controller'], prefix: \WEB_DIR);
-				exit(0);
+				$reqMethod = strtolower($_SERVER["REQUEST_METHOD"]);
+
+				if (method_exists($route["handler"], $route["method"])) {
+					call_user_func(
+						[$route["handler"], $route["method"]],
+						new Request(),
+					);
+					exit();
+				}
+
+				if (method_exists($route["handler"], $reqMethod)) {
+					call_user_func(
+						[$route["handler"], $reqMethod],
+						new Request(),
+					);
+					exit();
+				}
+
+				method_not_allowed();
 			}
 		}
 	}
@@ -82,7 +131,9 @@ class Router
 	 */
 	public function pathRedirect(string $from, string $to): Router
 	{
-		if ($this->path === $from) redirect($to);
+		if ($this->path === $from) {
+			redirect($to);
+		}
 		return $this;
 	}
 
@@ -91,7 +142,7 @@ class Router
 	 */
 	public function redirect(string $path_name): void
 	{
-		redirect($this->routes[$path_name]['path']);
+		redirect($this->routes[$path_name]["uri"]);
 	}
 
 	/**
@@ -114,13 +165,13 @@ class Router
 	/**
 	 * Get the corresponding type from a regex. (e.g. word, number or string)
 	 */
-	private function get_type_regex(string $type_name): string 
+	private function get_type_regex(string $type_name): string
 	{
 		return match ($type_name) {
-			'word' => '[A-Za-z]+',
-			'number' => '\d+',
-			'string' => '[A-Za-z0-9\-]+',
-			default => exit
+			"word" => "[A-Za-z]+",
+			"number" => "\d+",
+			"string" => "[A-Za-z0-9\-]+",
+			default => exit(),
 		};
 	}
 
@@ -137,12 +188,16 @@ class Router
 	 */
 	private function parse_url_params(string $path): bool
 	{
-		$param_name_regex = ':([a-zA-Z]+)';
-		$param_type_regex = '\((word|number|string)\)';
+		$param_name_regex = ":([a-zA-Z]+)";
+		$param_type_regex = "\((word|number|string)\)";
 		$full_param_regex = "/$param_name_regex$param_type_regex/";
 
 		if (preg_match_all($full_param_regex, $path, $matches)) {
-			$this->base_route = preg_replace('/\/?:[a-zA-Z]+\((word|number|string)\)/', '', $path);
+			$this->base_route = preg_replace(
+				"/\/?:[a-zA-Z]+\((word|number|string)\)/",
+				"",
+				$path,
+			);
 			$params = array_map(null, ...array_slice($matches, 1));
 
 			for ($i = 0; $i < sizeof($params); $i++) {
@@ -154,16 +209,31 @@ class Router
 
 			$route_with_types = preg_replace_callback(
 				$type_replace_regex,
-				fn ($matches) => '(' . $this->get_type_regex(str_replace(['(', ')'], ['',''], $matches[2])) . ')',
-				$path
+				fn($matches) => "(" .
+					$this->get_type_regex(
+						str_replace(["(", ")"], ["", ""], $matches[2]),
+					) .
+					")",
+				$path,
 			);
 
-			$route_with_backslashes = preg_replace('/\//', '\/', $route_with_types);
+			$route_with_backslashes = preg_replace(
+				"/\//",
+				"\/",
+				$route_with_types,
+			);
 
 			// check if the route ends with a route param or not
-			preg_match('/\(.*\)$/', $route_with_backslashes, $end_route_matches);
+			preg_match(
+				'/\(.*\)$/',
+				$route_with_backslashes,
+				$end_route_matches,
+			);
 
-			$parsed_route_regex = count($matches) > 0 ? "$route_with_backslashes$" : "$route_with_backslashes";
+			$parsed_route_regex =
+				count($matches) > 0
+					? "$route_with_backslashes$"
+					: "$route_with_backslashes";
 
 			preg_match("/$parsed_route_regex/", $this->path, $matches);
 
@@ -188,6 +258,13 @@ class Router
 	 */
 	private function remove_params(string $path): string
 	{
-		return rtrim(preg_replace("/:[A-Za-z]+\((word|number|string)\)(\/)?/", "", $path), '/');
+		return rtrim(
+			preg_replace(
+				"/:[A-Za-z]+\((word|number|string)\)(\/)?/",
+				"",
+				$path,
+			),
+			"/",
+		);
 	}
 }
