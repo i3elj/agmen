@@ -1,26 +1,21 @@
-<?php
+<?php declare(strict_types=1);
 
-declare(strict_types=1);
+namespace Tusk\Http;
 
-namespace tusk\http;
-
-use tusk\Request;
-use function tusk\http\status\bad_request;
-use function tusk\http\status\method_not_allowed;
-use function tusk\http\status\unprocessable_content;
-
-class http
+class HTTP
 {
-	public static function request(
-		$key,
-		$type = "string",
-		$default = null,
-	): mixed {
+	/**
+	 * @param string $key
+	 * @param mixed $type
+	 * @param mixed $default
+	 */
+	public static function Request(string $key, mixed $type = "string", mixed $default = null): mixed
+	{
 		return match ($_SERVER["REQUEST_METHOD"]) {
-			"GET" => self::_parse_superglobal($_GET, $key, $type, $default),
-			"POST" => self::_parse_superglobal($_POST, $key, $type, $default),
-			"PATCH", "PUT", "DELETE" => self::BODY($key, $type, $default),
-			default => method_not_allowed(),
+			"GET" => self::ParseSuperglobal($_GET, $key, $type, $default),
+			"POST" => self::ParseSuperglobal($_POST, $key, $type, $default),
+			"PATCH", "PUT", "DELETE" => self::Body($key, $type, $default),
+			default => Status::method_not_allowed(),
 		};
 	}
 
@@ -31,9 +26,9 @@ class http
 	 * @param string $type	  The function will try to convert the value to this type. Throwing a 422 status code (e.g. unprocessable entity).
 	 * @param mixed  $default The default value to return if the key is not found.
 	 */
-	public static function post($key, $type = "string", $default = null): mixed
+	public static function Post($key, $type = "string", $default = null): mixed
 	{
-		return self::_parse_superglobal($_POST, $key, $type, $default);
+		return self::ParseSuperglobal($_POST, $key, $type, $default);
 	}
 
 	/**
@@ -43,9 +38,9 @@ class http
 	 * @param string $type     The function will try to convert the value to this type. Throwing a 422 status code (e.g. unprocessable entity).
 	 * @param mixed  $default  The default value to return if the key is not found.
 	 */
-	public static function get($key, $type = "string", $default = null): mixed
+	public static function Get($key, $type = "string", $default = null): mixed
 	{
-		return self::_parse_superglobal($_GET, $key, $type, $default);
+		return self::ParseSuperglobal($_GET, $key, $type, $default);
 	}
 
 	/**
@@ -55,11 +50,11 @@ class http
 	 * @param string $type    The function will try to convert the value to this type. Throwing a 422 status code (e.g. unprocessable entity).
 	 * @param mixed  $default The default value to return if the key is not found.
 	 */
-	public static function body($key, $type = "string", $default = null): mixed
+	public static function Body($key, $type = "string", $default = null): mixed
 	{
 		$temp_arr = [];
 		parse_str(urldecode(file_get_contents("php://input")), $temp_arr);
-		return self::_parse_superglobal($temp_arr, $key, $type, $default);
+		return self::ParseSuperglobal($temp_arr, $key, $type, $default);
 	}
 
 	/**
@@ -72,15 +67,11 @@ class http
 	 * @param string $type       The function will try to convert the value to this type. Throwing a 422 status code (e.g. unprocessable entity).
 	 * @param mixed $default	 The default value to return if the key is not found.
 	 */
-	private static function _parse_superglobal(
-		$superglobal,
-		$key,
-		$type,
-		$default = null,
-	): mixed {
+	private static function ParseSuperglobal(array $superglobal, string $key, string $type, mixed $default = null): mixed
+	{
 		if (!array_key_exists($key, $superglobal)) {
 			if (!isset($default)) {
-				bad_request(false);
+				Status::bad_request(false);
 				return null;
 			}
 			return $default;
@@ -103,7 +94,7 @@ class http
 			return $value;
 		}
 
-		unprocessable_content();
+		Status::unprocessable_content();
 		return null;
 	}
 
@@ -114,24 +105,18 @@ class http
 	 * @param mixed  $default The default value to return if the key is not found.
 	 * @return array|NULL
 	 */
-	public static function files(string $key, $default = null): array|NULL
+	public static function Files(string $key, mixed $default = null): array|NULL
 	{
 		$key_was_sent = array_key_exists($key, $_FILES);
 		$value_is_empty = sizeof($_FILES[$key]) == 0;
 		$key_was_sent_but_empty = $key_was_sent && $value_is_empty;
 		$default_is_set = isset($default);
 
-		if (
-			(!$key_was_sent && !$default_is_set) ||
-			($key_was_sent_but_empty && !$default_is_set)
-		) {
-			bad_request();
+		if ((!$key_was_sent && !$default_is_set) || ($key_was_sent_but_empty && !$default_is_set)) {
+			Status::bad_request();
 		}
 
-		if (
-			(!$key_was_sent && $default_is_set) ||
-			($key_was_sent_but_empty && $default_is_set)
-		) {
+		if ((!$key_was_sent && $default_is_set) || ($key_was_sent_but_empty && $default_is_set)) {
 			return $default;
 		}
 

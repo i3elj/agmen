@@ -1,17 +1,23 @@
 {
-    "name": "bern/tusk",
-    "description": "A simple web library",
-    "type": "library",
-    "license": "MIT",
-    "autoload": {
-        "files": ["init.php"]
-    },
-    "authors": [
-        {
-            "name": "r-odriguez",
-            "email": "guisande.bernardo@gmail.com"
-        }
-    ],
-    "minimum-stability": "stable",
-    "require": {}
+	"name": "bern/tusk",
+	"description": "A simple web library",
+	"type": "library",
+	"license": "MIT",
+	"autoload": {
+		"psr-4": {
+			"Tusk\\": "src/"
+		},
+		"files": [
+			"init.php",
+			"src/global_functions.php"
+		]
+	},
+	"authors": [
+		{
+			"name": "r-odriguez",
+			"email": "guisande.bernardo@gmail.com"
+		}
+	],
+	"minimum-stability": "stable",
+	"require": {}
 }

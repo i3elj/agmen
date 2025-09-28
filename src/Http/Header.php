@@ -1,0 +1,12 @@
+<?php declare(strict_types=1);
+
+namespace Tusk\Http;
+
+class Header
+{
+	public static function redirect(string $path, int $exit_status = 0): void
+	{
+		header('Location: ' . $path);
+		exit($exit_status);
+	}
+}

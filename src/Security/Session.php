@@ -1,19 +1,19 @@
 <?php declare(strict_types=1);
 
-namespace tusk;
+namespace Tusk\Security;
 
 class Session
 {
 	public static string $key;
 
-	public static function Init()
+	public static function Init(): void
 	{
 		session_name();
 		session_start();
 		static::SignGuest();
 
-		if (!isset($_SESSION['csrf_token'])) {
-			static::GenerateCsrfToken();
+		if (Csrf::GetToken() !== NULL) {
+			Csrf::GenerateToken();
 		}
 	}
 
@@ -23,8 +23,8 @@ class Session
 		$_SESSION[$key] = $signValue;
 		static::$key = $key;
 
-		if (!isset($_SESSION['csrf_token'])) {
-			static::GenerateCsrfToken();
+		if (Csrf::GetToken() !== NULL) {
+			Csrf::GenerateToken();
 		}
 
 		unset($_SESSION["guest"]);
@@ -34,7 +34,7 @@ class Session
 	{
 		$_SESSION["signed"] = false;
 		unset($_SESSION[static::$key]);
-		unset($_SESSION['csrf_token']);
+		Csrf::UnsetToken();
 		static::SignGuest();
 	}
 
@@ -58,21 +58,5 @@ class Session
 	public static function UserType(): string
 	{
 		return static::IsSigned() ? "signed" : "guest";
-	}
-
-	public static function GetCsrfToken()
-	{
-		return $_SESSION['csrf_token'] ?? NULL;
-	}
-
-	public static function GenerateCsrfToken()
-	{
-		$random_key = bin2hex(random_bytes(32) . time());
-		$_SESSION['csrf_token'] = $random_key;
-	}
-
-	public static function CompareCsrfTokens(?string $token)
-	{
-		return hash_equals($_SESSION['csrf_token'] ?? '', $token ?? '');
 	}
 }

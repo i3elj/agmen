@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace tusk;
+namespace Tusk;
 
-use tusk\http\http;
-
-use function tusk\http\header\redirect;
-use function tusk\http\status\method_not_allowed;
+use Tusk\Http\Header;
+use Tusk\Http\Status;
+use function Tusk\snip;
 
 class Router
 {
@@ -21,7 +20,7 @@ class Router
 
 	public function __construct()
 	{
-		$this->path = URL["path"];
+		$this->path = parse_url($_SERVER["REQUEST_URI"])["path"];
 	}
 
 	/**
@@ -29,7 +28,7 @@ class Router
 	 */
 	public function getPath(string $path_name, ?array $params = null): string
 	{
-		$uri = $this->routes[$path_name]['uri'];
+		$uri = $this->routes[$path_name]["uri"];
 
 		if (isset($params)) {
 			foreach ($params as $var => $val) {
@@ -42,9 +41,15 @@ class Router
 
 	/**
 	 * Forwards the request to the specified controller
+	 * @param array<int,mixed> $middlewares
 	 */
-	public function path(string $uri, string $name, array $middlewares, string $handler, ?string $method = ""): Router
-	{
+	public function path(
+		string $uri,
+		string $name,
+		array $middlewares,
+		string $handler,
+		?string $method = "",
+	): Router {
 		$fullUri = rtrim($this->prefix, "/") . "/" . ltrim($uri, "/");
 		$fullMiddleware = array_merge($this->middlewares, $middlewares);
 
@@ -57,9 +62,15 @@ class Router
 
 		return $this;
 	}
-
-	public function group(string $prefix, array $middlewares, callable $callback)
-	{
+	/**
+	 * @param array<int,mixed> $middlewares
+	 * @param callable(): mixed $callback
+	 */
+	public function group(
+		string $prefix,
+		array $middlewares,
+		callable $callback,
+	): void {
 		$currentPrefix = $this->prefix;
 		$currentMiddleware = $this->middlewares;
 
@@ -87,7 +98,7 @@ class Router
 	/**
 	 * Handle the upcoming request.
 	 */
-	public function handle()
+	public function handle(): void
 	{
 		foreach ($this->routes as $route_name => $route) {
 			if ($this->match_url_with_route($route["uri"])) {
@@ -105,7 +116,10 @@ class Router
 
 				$reqMethod = strtolower($_SERVER["REQUEST_METHOD"]);
 
-				if (method_exists($route["handler"], $route["method"])) {
+				if (
+					strlen($route["method"]) > 0 &&
+					method_exists($route["handler"], $route["method"])
+				) {
 					call_user_func(
 						[$route["handler"], $route["method"]],
 						new Request(),
@@ -121,7 +135,7 @@ class Router
 					exit();
 				}
 
-				method_not_allowed();
+				Status::method_not_allowed();
 			}
 		}
 	}
@@ -132,7 +146,7 @@ class Router
 	public function pathRedirect(string $from, string $to): Router
 	{
 		if ($this->path === $from) {
-			redirect($to);
+			Header::redirect($to);
 		}
 		return $this;
 	}
@@ -142,20 +156,22 @@ class Router
 	 */
 	public function redirect(string $path_name): void
 	{
-		redirect($this->routes[$path_name]["uri"]);
+		Header::redirect($this->routes[$path_name]["uri"]);
 	}
 
 	/**
 	 * Resolves a view using the route passed to the `Route::path` method.
+	 * @param array<int,mixed> $ctx
 	 */
 	public function view(array $ctx = []): void
 	{
 		extract($ctx, EXTR_SKIP);
-		require_once base_path(\WEB_DIR . $this->route . "view.php");
+		require_once \BASE_PATH . \WEB_DIR . $this->route . "view.php";
 	}
 
 	/**
 	 * Returns a snip based on the router as the `component_path`
+	 * @param array<int,mixed> $ctx
 	 */
 	public function snip(string $name, array $ctx = []): void
 	{
