@@ -5,8 +5,8 @@ use middlewares\SomeMiddleware;
 use pages\RouterClassHandler;
 use Tusk\Router;
 
-require_once "config.php";
-require_once "../vendor/autoload.php";
+require "config.php";
+require "../vendor/autoload.php";
 
 const r = new Router();
 r->group('/', [SomeMiddleware::class], function (Router $r) {

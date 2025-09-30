@@ -193,6 +193,7 @@ function get_mime_type(string $filename): bool|string
 	$finfo = new \finfo(FILEINFO_MIME_TYPE);
 
 	if (!$finfo) {
+		finfo_close($finfo);
 		return false;
 	}
 
