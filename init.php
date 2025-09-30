@@ -5,8 +5,3 @@ if (!defined("BASE_PATH")) {
 		"Tusk needs the BASE_PATH variable to be define, it tells where the project base path is",
 	);
 }
-
-$configFile = BASE_PATH . "config.php";
-if (file_exists($configFile)) {
-	include $configFile;
-}
