@@ -28,11 +28,9 @@ class Database
 		$ENV = parse_ini_file(\BASE_PATH . ".env");
 
 		try {
-			if ($ENV["DB"] == "sqlite") {
-				return self::sqlite_connect($ENV);
-			} else {
-				return self::server_connect($ENV, driver_name: $ENV["DB"]);
-			}
+			return $ENV["DB"] == "sqlite"
+				? self::sqlite_connect($ENV)
+				: self::server_connect($ENV, driver_name: $ENV["DB"]);
 		} catch (Exception $e) {
 			throw new Exception(
 				"Warning: .env file doesn't have a DB variable",
@@ -43,8 +41,8 @@ class Database
 	/**
 	 * Connects to a database that uses a server, like MySQL, PostgreSQL, MariaDB, etc...
 	 *
-	 * @param array<mixed> $ENV   Environment variables with the database information.
-	 * @param string $driver_name The name of the driver used.
+	 * @param array<mixed> $ENV         Environment variables with the database information.
+	 * @param string       $driver_name The name of the driver used.
 	 *
 	 * @return Database
 	 */

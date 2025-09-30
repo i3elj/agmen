@@ -1,4 +1,8 @@
 <?php declare(strict_types=1);
+
+namespace Tusk;
+
+use DirectoryIterator;
 use Tusk\Http\Status;
 
 /**
@@ -10,7 +14,8 @@ function import(string $path, array $ctx = [], int $index = 0): void
 	$base = $index == 0 ? \BASE_PATH . $path : $path;
 
 	if (is_dir($base)) {
-		foreach (new DirectoryIterator($base) as $file) {
+		$iter = new DirectoryIterator($base);
+		foreach ($iter as $file) {
 			$filename = $file->getRealPath();
 
 			if ($file->isDot()) {
@@ -117,7 +122,7 @@ function view(string $name = "view", $ctx = [])
  *
  * @return void
  */
-function snip($name, $ctx = [], $components_path = URL["path"])
+function snip($name, $ctx = [], $components_path = \URL["path"])
 {
 	extract($ctx);
 	$name = str_replace(".", "/", $name);

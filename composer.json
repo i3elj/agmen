@@ -9,6 +9,7 @@
 		},
 		"files": [
 			"init.php",
+			"src/constants.php",
 			"src/global_functions.php"
 		]
 	},

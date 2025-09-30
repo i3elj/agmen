@@ -1,6 +1,6 @@
 <?php
 
-namespace tusk;
+namespace Tusk;
 
 #[\AllowDynamicProperties]
 class Request

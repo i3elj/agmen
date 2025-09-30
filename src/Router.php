@@ -26,14 +26,21 @@ class Router
 	/**
 	 * Get the path value with the correspondig path name.
 	 */
-	public function getPath(string $path_name, ?array $params = null): string
-	{
+	public function getPath(
+		string $path_name,
+		?array $route_params = null,
+		?array $query_params = null,
+	): string {
 		$uri = $this->routes[$path_name]["uri"];
 
-		if (isset($params)) {
-			foreach ($params as $var => $val) {
+		if (isset($route_params)) {
+			foreach ($route_params as $var => $val) {
 				$uri = preg_replace("/(:$var\([A-Za-z]+\))/", $val, $uri);
 			}
+		}
+
+		if (isset($query_params)) {
+			$uri .= '?' . http_build_query($query_params);
 		}
 
 		return $uri;
