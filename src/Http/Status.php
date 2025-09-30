@@ -40,6 +40,20 @@ class Status
 	}
 
 	/**
+	 * The HTTP 401 Unauthorized client error response status code indicates that
+	 * a request was not successful because it lacks valid authentication credentials
+	 * for the requested resource. This status code is sent with an HTTP
+	 * WWW-Authenticate response header that contains information on the
+	 * authentication scheme the server expects the client to include to make the
+	 * request successfully. Read more at [mdn web docs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/401).
+	 */
+	public static function unauthorized(bool $kill = true): void
+	{
+		http_response_code(401);
+		if ($kill) exit(1);
+	}
+
+	/**
 	 * The HTTP 403 Forbidden client error response status code indicates that the
 	 * server understood the request but refused to process it. This status is
 	 * similar to 401, except that for 403 Forbidden responses, authenticating or
