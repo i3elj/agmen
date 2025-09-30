@@ -1,6 +1,9 @@
 # Agmen
-![A logo of a battalion of soldiers with the name Agmen at the bottom](./assets/logo.png)
-A simple opinionated web library to be used alongside nginx or apache.
+<p align="center">
+  <img src="./assets/logo.png" alt="A logo of a battalion of soldiers with the name Agmen at the bottom" width="420"/>
+</p>
+
+<p align="center">A simple opinionated web library to be used alongside nginx or apache.</p>
 
 ## Installation
 ```bash
