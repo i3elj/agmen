@@ -1,5 +1,5 @@
 <?php
-use function Tusk\globals;
+use function Agmen\globals;
 
 $query = r->getPath("queries", query_params: ["test" => "foo", "baz" => "bar"]);
 $params = r->getPath("parameters", route_params: ["foo" => "bar"]);

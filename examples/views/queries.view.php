@@ -1,6 +1,6 @@
 <?php
-use function Tusk\globals;
-use function Tusk\snip;
+use function Agmen\globals;
+use function Agmen\snip;
 ?>
 
 <?= snip("goback") ?>

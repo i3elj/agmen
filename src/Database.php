@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tusk;
+namespace Agmen;
 
 use PDO;
 use PDOException;

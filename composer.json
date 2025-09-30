@@ -1,11 +1,11 @@
 {
-	"name": "i3elj/tusk",
+	"name": "i3elj/agmen",
 	"description": "A simple web library",
 	"type": "library",
 	"license": "MIT",
 	"autoload": {
 		"psr-4": {
-			"Tusk\\": "src/"
+			"Agmen\\": "src/"
 		},
 		"files": [
 			"init.php",

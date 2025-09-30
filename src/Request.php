@@ -1,6 +1,6 @@
 <?php
 
-namespace Tusk;
+namespace Agmen;
 
 #[\AllowDynamicProperties]
 class Request

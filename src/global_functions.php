@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Tusk;
+namespace Agmen;
 
 use DirectoryIterator;
-use Tusk\Http\Status;
+use Agmen\Http\Status;
 
 /**
  * Requires once the file and extract every associative array inside $ctx. If

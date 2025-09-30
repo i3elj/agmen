@@ -3,7 +3,7 @@
 use middlewares\NoOneCanEnter;
 use middlewares\SomeMiddleware;
 use pages\RouterClassHandler;
-use Tusk\Router;
+use Agmen\Router;
 
 require "config.php";
 require "../vendor/autoload.php";

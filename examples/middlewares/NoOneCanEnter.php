@@ -2,10 +2,10 @@
 
 namespace middlewares;
 
-use Tusk\Http\Status;
-use Tusk\Middleware;
-use function Tusk\error;
-use function Tusk\error_page;
+use Agmen\Http\Status;
+use Agmen\Middleware;
+use function Agmen\error;
+use function Agmen\error_page;
 
 class NoOneCanEnter extends Middleware
 {

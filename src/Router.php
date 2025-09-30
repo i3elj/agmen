@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Tusk;
+namespace Agmen;
 
-use Tusk\Http\Header;
-use Tusk\Http\Status;
-use function Tusk\snip;
+use Agmen\Http\Header;
+use Agmen\Http\Status;
+use function Agmen\snip;
 
 class Router
 {

@@ -2,7 +2,7 @@
 
 namespace middlewares;
 
-use Tusk\Middleware;
+use Agmen\Middleware;
 
 class SomeMiddleware extends Middleware
 {

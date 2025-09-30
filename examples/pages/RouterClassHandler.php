@@ -2,10 +2,10 @@
 
 namespace pages;
 
-use Tusk\Http\Status;
-use Tusk\Request;
-use function Tusk\allowed_methods;
-use function Tusk\view;
+use Agmen\Http\Status;
+use Agmen\Request;
+use function Agmen\allowed_methods;
+use function Agmen\view;
 
 class RouterClassHandler
 {

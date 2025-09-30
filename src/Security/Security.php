@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tusk\Security;
+namespace Agmen\Security;
 
 class Csrf
 {
@@ -31,4 +31,3 @@ class Csrf
 		return "<input type='hidden' name='csrfToken' value='$csrfToken' />";
 	}
 }
-
