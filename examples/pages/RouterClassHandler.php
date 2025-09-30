@@ -19,16 +19,23 @@ class RouterClassHandler
 	public static function queries(Request $req): void
 	{
 		/* and handle methods inside */
-		allowed_methods('GET'); // POST, PUT, DELETE => 405 Method Not Allowed
+		allowed_methods("GET"); // POST, PUT, DELETE => 405 Method Not Allowed
 		$queries = $req->getQuery(); // getForm, getJson, getFiles too...
-		view('queries', compact('queries')); // compact == ['queries' => $queries]
+		view("queries", compact("queries")); // compact == ['queries' => $queries]
 	}
 
 	public static function parameters(): void
 	{
-		if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+		if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			Status::method_not_allowed(); // you can manually handle the response too
 		}
-		view('parameters', ['param' => r->param("foo")]);
+		view("parameters", ["param" => r->param("foo")]);
+	}
+
+	public static function notAllowed(): void
+	{
+		echo <<<HTML
+			<h1>Good luck trying to get here</h1>
+		HTML;
 	}
 }

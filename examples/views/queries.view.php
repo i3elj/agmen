@@ -1,6 +1,9 @@
-<?php  use function Tusk\snip; ?>
+<?php
+use function Tusk\globals;
+use function Tusk\snip;
+?>
 
-<?= snip('goback') ?>
+<?= snip("goback") ?>
 
 <h1>Here are some queries</h1>
 
@@ -9,3 +12,5 @@
 		<li><?= $key ?>: <?= $value ?></li>
 	<?php endforeach; ?>
 </ul>
+
+<?= globals("footer") ?>
