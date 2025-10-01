@@ -140,19 +140,19 @@ function snip($name, $ctx = [], $components_path = \URL["path"])
 function globals($name, $ctx = [])
 {
 	extract($ctx);
-	require \BASE_PATH . \GLOBALS_DIR . "/$name.php";
+	require \BASE_PATH . \GLOBALS_DIR . "$name.php";
 }
 
 function icon(string $name, string $ext = "svg", array $ctx = []): void
 {
 	extract($ctx);
-	require \BASE_PATH . \ICONS_DIR . "/$name.$ext";
+	require \BASE_PATH . \ICONS_DIR . "$name.$ext";
 }
 
 function svg(string $name, array $ctx = []): void
 {
 	extract($ctx);
-	require \BASE_PATH . \SVG_DIR . "/$name.svg";
+	require \BASE_PATH . \SVG_DIR . "$name.svg";
 }
 
 /**

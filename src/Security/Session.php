@@ -45,7 +45,7 @@ class Session
 
 	public static function SignedUser(): string|null
 	{
-		return static::IsSigned() ? $_SESSION["email"] : $_SESSION["guest"];
+		return static::IsSigned() ? $_SESSION[static::$key] : $_SESSION["guest"];
 	}
 
 	public static function SignGuest(): void
