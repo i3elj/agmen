@@ -6,7 +6,7 @@ if (!defined("WEB_DIR")) {
 	define("WEB_DIR", "src/views/");
 }
 if (!defined("COMPONENTS_DIR_NAME")) {
-	define("COMPONENTS_DIR_NAME", "src/views/snippets/");
+	define("COMPONENTS_DIR", "src/views/snippets/");
 }
 if (!defined("GLOBALS_DIR")) {
 	define("GLOBALS_DIR", "src/views/globals/");

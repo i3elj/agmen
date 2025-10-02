@@ -126,7 +126,7 @@ function snip($name, $ctx = [], $components_path = \URL["path"])
 {
 	extract($ctx);
 	$name = str_replace(".", "/", $name);
-	require \BASE_PATH . \WEB_DIR . \COMPONENTS_DIR_NAME . "$name.php";
+	require \BASE_PATH . \COMPONENTS_DIR . "$name.php";
 }
 
 /**
