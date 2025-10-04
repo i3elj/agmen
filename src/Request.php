@@ -1,8 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Agmen;
 
-#[\AllowDynamicProperties]
 class Request
 {
 	public string|array $rawData;
@@ -11,30 +10,30 @@ class Request
 
 	public function __construct()
 	{
-		$this->method = $_SERVER["REQUEST_METHOD"] ?? 'GET';
+		$this->method = $_SERVER["REQUEST_METHOD"] ?? "GET";
 		$contentType = $_SERVER["CONTENT_TYPE"] ?? "";
 
 		// get raw body
 		$this->rawData = match ($this->method) {
 			"GET" => $_GET,
-			"POST", "PUT", "PATCH", "DELETE" => file_get_contents("php://input"),
+			"POST" => $_POST,
+			"PUT", "PATCH", "DELETE" => file_get_contents("php://input"),
 			default => [],
 		};
 
 		// parse body
-		if ($this->method === 'GET') {
+		if ($this->method === "GET") {
 			$this->parsedData = $_GET;
-		} elseif (str_starts_with($contentType, 'application/json')) {
+		} elseif ($this->method === "POST") {
+			$this->parsedData = $_POST;
+		} elseif (str_starts_with($contentType, "application/json")) {
 			$this->parsedData = json_decode($this->rawData, true) ?? [];
-		} elseif (str_starts_with($contentType, 'application/x-www-form-urlencoded')) {
+		} elseif (
+			str_starts_with($contentType, "application/x-www-form-urlencoded")
+		) {
 			parse_str($this->rawData, $this->parsedData);
 		} else {
 			$this->parsedData = [];
-		}
-
-		// expose as properties
-		foreach ($this->parsedData as $key => $val) {
-			$this->{$key} = $this->sanitize($val);
 		}
 	}
 
@@ -50,9 +49,16 @@ class Request
 			return [];
 		}
 
+		if ($this->method === "POST") {
+			return $this->deepCopy($_POST);
+		}
+
 		if (
 			isset($_SERVER["CONTENT_TYPE"]) &&
-			str_starts_with($_SERVER["CONTENT_TYPE"], 'application/x-www-form-urlencoded')
+			str_starts_with(
+				$_SERVER["CONTENT_TYPE"],
+				"application/x-www-form-urlencoded",
+			)
 		) {
 			$parsed = [];
 			parse_str($this->rawData, $parsed);
@@ -66,7 +72,7 @@ class Request
 	{
 		if (
 			isset($_SERVER["CONTENT_TYPE"]) &&
-			str_starts_with($_SERVER["CONTENT_TYPE"], 'application/json')
+			str_starts_with($_SERVER["CONTENT_TYPE"], "application/json")
 		) {
 			return $this->deepCopy(json_decode($this->rawData, true) ?? []);
 		}
@@ -91,7 +97,7 @@ class Request
 		if (is_array($val)) {
 			return array_map([$this, "sanitize"], $val);
 		}
-		return htmlspecialchars((string) $val, ENT_QUOTES, 'UTF-8');
+		return htmlspecialchars((string) $val, ENT_QUOTES, "UTF-8");
 	}
 
 	private function deepCopy(array $data): array

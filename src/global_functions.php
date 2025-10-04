@@ -109,12 +109,12 @@ function controller(string $route, string $prefix = "")
 function view(string $name = "view", $ctx = [])
 {
 	extract($ctx);
-	require_once \BASE_PATH . \WEB_DIR . "$name.view.php";
+	require_once \BASE_PATH . \WEB_PATH . "$name.view.php";
 }
 
 /**
  * Calls an html snippet based on the `URL['path']` global variable. It uses
- * the `COMPONENT_DIR_NAME` global variable to locate the correct folder under
+ * the `COMPONENT_PATH` global variable to locate the correct folder under
  * the specified route.
  *
  * @param string $name The name of the file without the .php extension
@@ -126,12 +126,12 @@ function snip($name, $ctx = [], $components_path = \URL["path"])
 {
 	extract($ctx);
 	$name = str_replace(".", "/", $name);
-	require \BASE_PATH . \COMPONENTS_DIR . "$name.php";
+	require \BASE_PATH . \COMPONENTS_PATH . "$name.php";
 }
 
 /**
  * Calls a specific html snippet that should be used sporadically, like
- * `<head/>` or `<nav/>`. Uses the `GLOBALS_DIR` global variable to locate
+ * `<head/>` or `<nav/>`. Uses the `GLOBALS_PATH` global variable to locate
  * the files.
  *
  * @param string $name The name of the file without the .php extension.
@@ -140,30 +140,30 @@ function snip($name, $ctx = [], $components_path = \URL["path"])
 function globals($name, $ctx = [])
 {
 	extract($ctx);
-	require \BASE_PATH . \GLOBALS_DIR . "$name.php";
+	require \BASE_PATH . \GLOBALS_PATH . "$name.php";
 }
 
 function icon(string $name, string $ext = "svg", array $ctx = []): void
 {
 	extract($ctx);
-	require \BASE_PATH . \ICONS_DIR . "$name.$ext";
+	require \BASE_PATH . \ICONS_PATH . "$name.$ext";
 }
 
 function svg(string $name, array $ctx = []): void
 {
 	extract($ctx);
-	require \BASE_PATH . \SVG_DIR . "$name.svg";
+	require \BASE_PATH . \SVG_PATH . "$name.svg";
 }
 
 /**
- * Return an error page with an exit(1). Uses the `ERROR_PAGES_DIR` to locate
+ * Return an error page with an exit(1). Uses the `ERROR_PAGES_PATH` to locate
  * the page.
  *
  * @param string $name Name of the error page without the .php extension.
  */
 function error_page($name)
 {
-	require_once \BASE_PATH . \ERROR_PAGES_DIR . "$name.php";
+	require_once \BASE_PATH . \ERROR_PAGES_PATH . "$name.php";
 	exit(1);
 }
 
@@ -205,8 +205,7 @@ function get_mime_type(string $filename): bool|string
 
 function get_upload_dir(): string
 {
-	$currDir = realpath(dirname(getcwd()));
-	$uploadDir = "$currDir/public_html/uploads/";
+	$uploadDir = \BASE_PATH . \UPLOAD_PATH;
 
 	if (!file_exists($uploadDir) && !is_dir($uploadDir)) {
 		mkdir($uploadDir);

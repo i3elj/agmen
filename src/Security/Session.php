@@ -12,7 +12,7 @@ class Session
 		session_start();
 		static::SignGuest();
 
-		if (Csrf::GetToken() !== NULL) {
+		if (Csrf::GetToken() !== null) {
 			Csrf::GenerateToken();
 		}
 	}
@@ -23,7 +23,7 @@ class Session
 		$_SESSION[$key] = $signValue;
 		static::$key = $key;
 
-		if (Csrf::GetToken() !== NULL) {
+		if (Csrf::GetToken() !== null) {
 			Csrf::GenerateToken();
 		}
 

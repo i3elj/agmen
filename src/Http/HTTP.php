@@ -103,9 +103,9 @@ class HTTP
 	 *
 	 * @param string $key     The key of the files.
 	 * @param mixed  $default The default value to return if the key is not found.
-	 * @return array|NULL
+	 * @return array|null
 	 */
-	public static function Files(string $key, mixed $default = null): array|NULL
+	public static function Files(string $key, mixed $default = null): array|null
 	{
 		$key_was_sent = array_key_exists($key, $_FILES);
 		$value_is_empty = sizeof($_FILES[$key]) == 0;

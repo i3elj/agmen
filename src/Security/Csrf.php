@@ -6,7 +6,7 @@ class Csrf
 {
 	public static function GetToken(): ?string
 	{
-		return $_SESSION['csrfToken'] ?? NULL;
+		return $_SESSION['csrfToken'] ?? null;
 	}
 
 	public static function GenerateToken(): void

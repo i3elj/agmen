@@ -1,22 +1,25 @@
 <?php
 
-define('URL', parse_url($_SERVER["REQUEST_URI"]));
+define("URL", parse_url($_SERVER["REQUEST_URI"]));
 
-if (!defined("WEB_DIR")) {
-	define("WEB_DIR", "src/views/");
+if (!defined("WEB_PATH")) {
+	define("WEB_PATH", "src/views/");
 }
-if (!defined("COMPONENTS_DIR_NAME")) {
-	define("COMPONENTS_DIR", "src/views/snippets/");
+if (!defined("COMPONENTS_PATH")) {
+	define("COMPONENTS_PATH", "src/views/snippets/");
 }
-if (!defined("GLOBALS_DIR")) {
-	define("GLOBALS_DIR", "src/views/globals/");
+if (!defined("GLOBALS_PATH")) {
+	define("GLOBALS_PATH", "src/views/globals/");
 }
-if (!defined("ICONS_DIR")) {
-	define("ICONS_DIR", "public/svg/icons/");
+if (!defined("ICONS_PATH")) {
+	define("ICONS_PATH", "public/svg/icons/");
 }
-if (!defined("SVG_DIR")) {
-	define("SVG_DIR", "public/svg/");
+if (!defined("SVG_PATH")) {
+	define("SVG_PATH", "public/svg/");
 }
-if (!defined("ERROR_PAGES_DIR")) {
-	define("ERROR_PAGES_DIR", "src/views/errors/");
+if (!defined("ERROR_PAGES_PATH")) {
+	define("ERROR_PAGES_PATH", "src/views/errors/");
+}
+if (!defined("UPLOAD_PATH")) {
+	define("UPLOAD_PATH", "uploads/");
 }

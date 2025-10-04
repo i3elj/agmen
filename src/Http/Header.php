@@ -6,7 +6,7 @@ class Header
 {
 	public static function redirect(string $path, int $exit_status = 0): void
 	{
-		header('Location: ' . $path);
+		header("Location: $path");
 		exit($exit_status);
 	}
 }
