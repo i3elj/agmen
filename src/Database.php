@@ -33,7 +33,7 @@ class Database
 				: self::server_connect($ENV, driver_name: $ENV["DB"]);
 		} catch (Exception $e) {
 			throw new Exception(
-				$e->getMessage() . '\n' . $e->getTraceAsString(),
+				"Warning: .env file doesn't have a DB variable",
 			);
 		}
 	}

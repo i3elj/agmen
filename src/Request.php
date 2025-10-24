@@ -2,81 +2,52 @@
 
 namespace Agmen;
 
+#[\AllowDynamicProperties]
 class Request
 {
 	public string|array $rawData;
 	public readonly string $method;
-	public array $parsedData = [];
+	public readonly string $contentType;
+	public array $data = [];
 
 	public function __construct()
 	{
-		$this->method = $_SERVER["REQUEST_METHOD"] ?? "GET";
-		$contentType = $_SERVER["CONTENT_TYPE"] ?? "";
+		$this->method = $_SERVER["REQUEST_METHOD"] ?? 'GET';
+		$this->contentType = $_SERVER["CONTENT_TYPE"] ?? "";
+		$stream = @file_get_contents('php://input');
 
-		// get raw body
-		$this->rawData = match ($this->method) {
-			"GET" => $_GET,
-			"POST" => $_POST,
-			"PUT", "PATCH", "DELETE" => file_get_contents("php://input"),
-			default => [],
-		};
+		if (str_starts_with($this->contentType, 'application/json')) {
+			$this->rawData = json_decode($stream, true) ?? [];
+			$this->data = $this->deepCopy($this->rawData);
+		}
 
-		// parse body
-		if ($this->method === "GET") {
-			$this->parsedData = $_GET;
-		} elseif ($this->method === "POST") {
-			$this->parsedData = $_POST;
-		} elseif (str_starts_with($contentType, "application/json")) {
-			$this->parsedData = json_decode($this->rawData, true) ?? [];
-		} elseif (
-			str_starts_with($contentType, "application/x-www-form-urlencoded")
-		) {
-			parse_str($this->rawData, $this->parsedData);
-		} else {
-			$this->parsedData = [];
+		else if (in_array($this->method, ['GET', 'POST'])) {
+			$this->rawData = match ($this->method) {
+				'GET' => $_GET,
+				'POST' => $_POST,
+			};
+
+			$this->data = $this->deepCopy($this->rawData);
+		}
+
+		else {
+			$this->rawData = $stream;
+			parse_str($this->rawData, $this->data);
+			$this->data = $this->deepCopy($this->data);
+		}
+
+		foreach ($this->data as $key => $val) {
+			$this->{$key} = $val;
 		}
 	}
 
-	public function getQuery(): array
+	public function json(): array|bool
 	{
-		return $this->deepCopy($_GET);
-	}
-
-	public function getForm(): array
-	{
-		// Only relevant for POST/PUT/PATCH/DELETE with form data
-		if ($this->method === "GET") {
-			return [];
+		if (str_starts_with($this->contentType, 'application/json')) {
+			return $this->rawData;
 		}
 
-		if ($this->method === "POST") {
-			return $this->deepCopy($_POST);
-		}
-
-		if (
-			isset($_SERVER["CONTENT_TYPE"]) &&
-			str_starts_with(
-				$_SERVER["CONTENT_TYPE"],
-				"application/x-www-form-urlencoded",
-			)
-		) {
-			$parsed = [];
-			parse_str($this->rawData, $parsed);
-			return $this->deepCopy($parsed);
-		}
-
-		return [];
-	}
-
-	public function getJson(): array
-	{
-		if (
-			isset($_SERVER["CONTENT_TYPE"]) &&
-			str_starts_with($_SERVER["CONTENT_TYPE"], "application/json")
-		) {
-			return $this->deepCopy(json_decode($this->rawData, true) ?? []);
-		}
-		return [];
+		return false;
 	}
 
 	public function getFiles(): array
@@ -97,7 +68,7 @@ class Request
 		if (is_array($val)) {
 			return array_map([$this, "sanitize"], $val);
 		}
-		return htmlspecialchars((string) $val, ENT_QUOTES, "UTF-8");
+		return htmlspecialchars((string) $val, ENT_QUOTES, 'UTF-8');
 	}
 
 	private function deepCopy(array $data): array

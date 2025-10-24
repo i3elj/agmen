@@ -1,25 +1,16 @@
 <?php
 
-define("URL", parse_url($_SERVER["REQUEST_URI"]));
+const __agmen_constants = [
+	"WEB_DIR" => "src/views/",
+	"COMPONENTS_DIR" => "src/views/snippets/",
+	"GLOBALS_DIR" => "src/views/globals/",
+	"ICONS_DIR" => "public/svg/icons/",
+	"SVG_DIR" => "public/svg/",
+	"ERROR_PAGES_DIR" => "src/views/errors/",
+];
 
-if (!defined("WEB_PATH")) {
-	define("WEB_PATH", "src/views/");
-}
-if (!defined("COMPONENTS_PATH")) {
-	define("COMPONENTS_PATH", "src/views/snippets/");
-}
-if (!defined("GLOBALS_PATH")) {
-	define("GLOBALS_PATH", "src/views/globals/");
-}
-if (!defined("ICONS_PATH")) {
-	define("ICONS_PATH", "public/svg/icons/");
-}
-if (!defined("SVG_PATH")) {
-	define("SVG_PATH", "public/svg/");
-}
-if (!defined("ERROR_PAGES_PATH")) {
-	define("ERROR_PAGES_PATH", "src/views/errors/");
-}
-if (!defined("UPLOAD_PATH")) {
-	define("UPLOAD_PATH", "uploads/");
+foreach (__agmen_constants as $const => $value) {
+	if (!defined($const)) {
+		define($const, $value);
+	}
 }

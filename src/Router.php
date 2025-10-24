@@ -35,7 +35,7 @@ class Router
 
 		if (isset($route_params)) {
 			foreach ($route_params as $var => $val) {
-				$uri = preg_replace("/(:$var\([A-Za-z]+\))/", $val, $uri);
+				$uri = preg_replace("/(:$var\([A-Za-z]+\))/", "$val", $uri);
 			}
 		}
 
@@ -191,9 +191,9 @@ class Router
 	private function get_type_regex(string $type_name): string
 	{
 		return match ($type_name) {
-			"word" => "[A-Za-z]+",
-			"number" => "\d+",
-			"string" => "[A-Za-z0-9\-]+",
+			"word" => "([A-Za-z]+)",
+			"number" => "(\d+)",
+			"string" => "([A-Za-z0-9\-]+)",
 			default => exit(),
 		};
 	}
@@ -232,11 +232,7 @@ class Router
 
 			$route_with_types = preg_replace_callback(
 				$type_replace_regex,
-				fn($matches) => "(" .
-					$this->get_type_regex(
-						str_replace(["(", ")"], ["", ""], $matches[2]),
-					) .
-					")",
+				fn($matches) => $this->get_type_regex(str_replace(["(", ")"], ["", ""], $matches[2])),
 				$path,
 			);
 
