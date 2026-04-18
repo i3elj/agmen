@@ -32,9 +32,7 @@ class Database
 				? self::sqlite_connect($ENV)
 				: self::server_connect($ENV, driver_name: $ENV["DB"]);
 		} catch (Exception $e) {
-			throw new Exception(
-				"Warning: .env file doesn't have a DB variable",
-			);
+			throw new Exception("Couldn't connect to database: $e");
 		}
 	}
 
