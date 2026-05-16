@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Agmen;
 
@@ -25,65 +27,76 @@ class Database
 			return self::$instance;
 		}
 
-		$ENV = parse_ini_file(\BASE_PATH . ".env");
+		$instance = null;
 
 		try {
-			return $ENV["DB"] == "sqlite"
-				? self::sqlite_connect($ENV)
-				: self::server_connect($ENV, driver_name: $ENV["DB"]);
+			$instance = match (ENV["DB"]) {
+				"sqlite" => self::sqlite_connect(),
+				default => self::server_connect()
+			};
 		} catch (Exception $e) {
 			throw new Exception("Couldn't connect to database: $e");
 		}
+
+		return $instance;
 	}
 
 	/**
 	 * Connects to a database that uses a server, like MySQL, PostgreSQL, MariaDB, etc...
 	 *
-	 * @param array<mixed> $ENV         Environment variables with the database information.
-	 * @param string       $driver_name The name of the driver used.
-	 *
 	 * @return Database
 	 */
-	private static function server_connect($ENV, $driver_name): Database
+	private static function server_connect(): Database
 	{
-		$HOST = $ENV["DB_HOST"];
-		$PORT = $ENV["DB_PORT"];
-		$USER = $ENV["DB_USER"];
-		$PWD = $ENV["DB_PASSWORD"];
-		$NAME = $ENV["DB_NAME"];
-		$dsn = "$driver_name:host=$HOST;port=$PORT;dbname=$NAME;user=$USER;password=$PWD";
+		$DRIVER = ENV['DB'];
+		$HOST = ENV["DB_HOST"];
+		$PORT = ENV["DB_PORT"];
+		$USER = ENV["DB_USER"];
+		$PWD = ENV["DB_PWD"];
+		$NAME = ENV["DB_NAME"];
+		$dsn = "$DRIVER:host=$HOST;port=$PORT;dbname=$NAME;charset=utf8mb4";
 		self::$instance = new Database();
-		(self::$instance->pdo = new PDO($dsn, $USER, $PWD)) or
-			throw new PDOException();
-		self::$instance->pdo->setAttribute(
-			PDO::ATTR_DEFAULT_FETCH_MODE,
-			PDO::FETCH_ASSOC,
-		);
-		self::$instance->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+
+		try {
+			self::$instance->pdo = new PDO($dsn, $USER, $PWD);
+		} catch (PDOException $e) {
+			match (DEV_MODE) {
+				true => error_log("PDO couldn't access the database: $e", 4),
+				false => error_log("PDO couldn't connect to the database, check your credentials", 4)
+			};
+			exit(1);
+		}
+
+		self::setAttributes();
+
 		return self::$instance;
 	}
 
 	/**
-	 * @param array $ENV
 	 * @return Database
 	 */
-	private static function sqlite_connect($ENV): Database
+	private static function sqlite_connect(): Database
 	{
-		$URL = $ENV["DB_URL"];
 		self::$instance = new Database();
-		self::$instance->pdo = new PDO("sqlite:" . \BASE_PATH . $URL);
-		self::$instance->pdo->setAttribute(
-			PDO::ATTR_DEFAULT_FETCH_MODE,
-			PDO::FETCH_ASSOC,
-		);
-		self::$instance->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+		self::$instance->pdo = new PDO("sqlite:" . \BASE_PATH . ENV["DB_URL"]);
+
+		self::setAttributes();
+
 		return self::$instance;
+	}
+
+	private static function setAttributes(): void
+	{
+		self::$instance->pdo->setAttribute(PDO::ATTR_PERSISTENT, true);
+		self::$instance->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC,);
+		self::$instance->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+		return;
 	}
 
 	/**
 	 * Runs a query in the database.
 	 *
-	 * @param  string $query  The query you want to run
+	 * @param  string $query  Use ? or :name for placeholders
 	 * @param  array  $values All the values the query needs
 	 * @return PDO|int
 	 */
@@ -127,8 +140,8 @@ class Database
 	/**
 	 * Runs a query in the database and return the affected rows.
 	 *
-	 * @param string $query  The query you want to run
-	 * @param array  $values All the values the query needs
+	 * @param  string $query  Use ? or :name for placeholders.
+	 * @param array  $values All the values the query needs.
 	 * @return array $rows, $count
 	 */
 	public function sqlr($query, $values = []): array
