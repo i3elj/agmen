@@ -1,5 +1,5 @@
 <?php
-define('DEV_MODE', true);
+define('APP_ENV', 'dev');
 define('BASE_PATH', dirname(__DIR__) . '/');
 define('ENV', [
 	'DB'      => 'mysql',

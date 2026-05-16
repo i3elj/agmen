@@ -60,9 +60,9 @@ class Database
 		try {
 			self::$instance->pdo = new PDO($dsn, $USER, $PWD);
 		} catch (PDOException $e) {
-			match (DEV_MODE) {
-				true => error_log("PDO couldn't access the database: $e", 4),
-				false => error_log("PDO couldn't connect to the database, check your credentials", 4)
+			match (APP_ENV) {
+				'dev' => error_log("PDO couldn't access the database: $e", 4),
+				'prod' => error_log("PDO couldn't connect to the database, check your credentials", 4)
 			};
 			exit(1);
 		}

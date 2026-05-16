@@ -12,9 +12,9 @@ if (!defined("BASE_PATH")) {
 	$errors = true;
 }
 
-if (!defined("DEV_MODE")) {
+if (!defined("APP_ENV")) {
 	error_log(
-		"FATAL LIB ERROR: Agmen needs to know if it is on production or development, define a DEV_MODE boolean variable.",
+		"FATAL LIB ERROR: Agmen needs to know if it is on production or development, define a APP_ENV boolean variable.",
 		4
 	);
 	$errors = true;
