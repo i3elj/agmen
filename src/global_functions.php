@@ -180,7 +180,7 @@ function todo(string $msg = ""): void
 
 function error(string $msg, int $code = 4): void
 {
-	error_log($msg, 4);
+	error_log($msg, $code);
 	return;
 }
 
